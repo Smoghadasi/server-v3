@@ -65,10 +65,10 @@ return [
             'model' => App\Models\User::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'drivers' => [
+            'driver' => 'eloquent',
+            'model' => \App\Models\Driver::class,
+        ],
     ],
 
     /*
@@ -96,6 +96,11 @@ return [
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
+        ],
+        'drivers' => [
+            'provider' => 'drivers',
+            'table' => 'password_resets',
+            'expire' => 1800,
         ],
     ],
 
