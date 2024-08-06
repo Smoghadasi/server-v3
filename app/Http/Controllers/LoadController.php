@@ -1820,10 +1820,11 @@ class LoadController extends Controller
     }
 
     // دریافت اطلاعات بار برای راننده
-    public function loadDetail($load_id, $driver_id)
+    public function loadDetail($load_id)
     {
+        $driver = Driver::findOrFail(Auth::id());
         try {
-            $result = Inquiry::where([['load_id', $load_id], ['driver_id', $driver_id]])->count();
+            $result = Inquiry::where([['load_id', $load_id], ['driver_id', $driver->id]])->count();
         } catch (\Exception $exception) {
             $result = 0;
         }
@@ -4202,14 +4203,15 @@ class LoadController extends Controller
     }
 
     // بررسی ثبت درخواست حمل توسط راننده
-    public function checkDriverInquiry($driver_id, $load_id)
+    public function checkDriverInquiry($load_id)
     {
+        $driver = Driver::findOrFail(Auth::id());
         try {
             return [
                 'result' =>
                 Inquiry::where([
                     ['load_id', $load_id],
-                    ['driver_id', $driver_id]
+                    ['driver_id', $driver->id]
                 ])->count()
             ];
         } catch (\Exception $exception) {
@@ -4332,10 +4334,10 @@ class LoadController extends Controller
     }
 
     // جستجوی بارهای نزدیک من
-    public function searchTheNearestCargo(Request $request, Driver $driver, $city = null, $radius = 1000)
+    public function searchTheNearestCargo(Request $request, $city = null, $radius = 1000)
     {
         $rows = 150;
-
+        $driver = Driver::findOrFail(Auth::id());
         try {
             if (isset($city->latitude) && $city->longitude) {
                 $latitude = $city->latitude;

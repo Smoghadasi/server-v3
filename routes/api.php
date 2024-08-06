@@ -465,10 +465,10 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
         Route::get('radio', [RadioController::class, 'index']);
 
         // بررسی ثبت درخواست حمل توسط راننده
-        Route::get('checkDriverInquiry/{driver_id}/{load_id}', [LoadController::class, 'checkDriverInquiry']);
+        Route::get('checkDriverInquiry/{load_id}', [LoadController::class, 'checkDriverInquiry']);
 
         // نزدیکترین بار به راننده
-        Route::post('searchTheNearestCargo/{driver}', [LoadController::class, 'searchTheNearestCargo']);
+        Route::post('searchTheNearestCargo', [LoadController::class, 'searchTheNearestCargo']);
 
         // درخواست لیست بارهای جدید برای راننده ها
         Route::get('requestNewLoadsForDrivers/{driver}', [LoadController::class, 'requestNewLoadsForDrivers']);
@@ -502,7 +502,7 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
         Route::get('getLoadInfo/{load_id}/{driver_id}', [LoadController::class, 'getLoadInfoForDriver']);
 
         // دریافت جزئیات بار برای راننده
-        Route::get('loadDetail/{load_id}/{driver_id}', [LoadController::class, 'loadDetail']);
+        Route::get('loadDetail/{load_id}', [LoadController::class, 'loadDetail']);
 
         Route::post('report', [ApiReportController::class, 'store']);
 

@@ -167,9 +167,7 @@ class LoginController extends Controller
                 // قبلا این راننده ذخیره شده است
                 return [
                     'result' => IS_MEMBER,
-                    'id' => $driver->id,
                     'token' => $token,
-
                 ];
             }
             // این راننده ذخیره نشده است
