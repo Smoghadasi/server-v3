@@ -529,16 +529,14 @@ class DriverController extends Controller
             $driver->freeCalls = DRIVER_FREE_CALLS;
         }
 
-
-
-
-
         $driver->save();
 
         if ($driver) {
+            $token = $driver->createToken('myapptoken')->plainTextToken;
+
             return [
                 'result' => SUCCESS,
-                'id' => $driver->id
+                'token' => $token
             ];
         }
 
@@ -583,10 +581,11 @@ class DriverController extends Controller
     }
 
     // ذخیره توکن FCM
-    public function saveMyFireBaseToken(Driver $driver, Request $request)
+    public function saveMyFireBaseToken(Request $request)
     {
+        $driver = Driver::findOrFail(Auth::id());
         $driver->FCM_token = $request->token;
-        $driver->version = 67;
+        $driver->version = 68;
         $driver->save();
         return ['result' => SUCCESS];
     }
@@ -847,11 +846,11 @@ class DriverController extends Controller
     }
 
     // بررسی وضعیت شارژ راننده برای تماس
-    public function checkDriverStatusForCalling(Driver $driver, $phoneNumber = '0', $load_id = 0, $latitude = 0, $longitude = 0)
+    public function checkDriverStatusForCalling($phoneNumber = '0', $load_id = 0, $latitude = 0, $longitude = 0)
     {
         try {
             $load = Load::where('id', '=', $load_id)->first();
-
+            $driver = Driver::findOrFail(Auth::id());
             // $owner = Owner::where('mobileNumber', $load->mobileNumberForCoordination)->whereNotNull('FCM_token')->first();
             // $cityFrom = ProvinceCity::findOrFail($load->origin_city_id);
             // $cityTo = ProvinceCity::findOrFail($load->destination_city_id);
@@ -1033,12 +1032,11 @@ class DriverController extends Controller
     }
 
     // بررسی وضعیت شارژ راننده برای قبول بار
-    public function checkDriverStatusForAcceptLoad(Driver $driver)
+    public function checkDriverStatusForAcceptLoad()
     {
+        $driver = Driver::findOrFail(Auth::id());
         try {
-
             if ($driver->activeDate > date("Y-m-d H:i:s", time()) || $driver->freeAcceptLoads > 0) {
-
                 if ($driver->activeDate < date("Y-m-d H:i:s", time())) {
                     $driver->freeAcceptLoads--;
                     $driver->save();
@@ -1291,8 +1289,9 @@ class DriverController extends Controller
 
     /************************************************************************************************/
     // دریافت اطلاعات پروفایل راننده
-    public function getDriverProfileInfo(Driver $driver)
+    public function getDriverProfileInfo()
     {
+        $driver = Driver::findOrFail(Auth::id());
         $remainingDaysOfSubscription = 0;
         try {
             $currentDate = new \DateTime(date('Y-m-d'));
@@ -1339,8 +1338,9 @@ class DriverController extends Controller
     }
 
     // بروز رسانی اطلاعات راننده
-    public function updateProfileInfo(Request $request, Driver $driver)
+    public function updateProfileInfo(Request $request)
     {
+        $driver = Driver::findOrFail(Auth::id());
         $rules = [
             'name' => 'required',
             'lastName' => 'required',
@@ -1532,9 +1532,9 @@ class DriverController extends Controller
         ]);
     }
 
-    public function updateLocation(Request $request, Driver $driver)
+    public function updateLocation(Request $request)
     {
-
+        $driver = Driver::findOrFail(Auth::id());
         try {
 
             $driver->latitude = $request->latitude;
@@ -1550,8 +1550,9 @@ class DriverController extends Controller
     }
 
     /*******************************************************************************************************/
-    public function driverAppVersion(Driver $driver, $version)
+    public function driverAppVersion($version)
     {
+        $driver = Driver::findOrFail(Auth::id());
         $driver->version = $version;
         $driver->save();
         return response()->json($driver->transactionCount, 200);

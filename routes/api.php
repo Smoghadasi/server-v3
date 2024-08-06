@@ -193,8 +193,6 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
     // درخواست اطلاعات پروفایل رانننده
     Route::get('driver/requestProfileInfo/{driver_id}', [DriverController::class, 'requestProfileInfo']);
 
-    // درخواست لیست بارهای راننده
-    Route::get('driver/requestDriverLoadsList/{driver_id}', [LoadController::class, 'requestDriverLoadsList']);
 
     // درخواست تغییر ناوگان راننده
     Route::post('driver/requestChangeFleet', [DriverController::class, 'requestChangeFleet']);
@@ -253,7 +251,6 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
     // جستجوی بار
     Route::post('driver/searchLoad', [LoadController::class, 'searchLoad']);
 
-    Route::post('score', [LoadController::class, 'score']);
 
 
     // مبلغ شهریه
@@ -464,80 +461,74 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
 
         Route::get('radio', [RadioController::class, 'index']);
 
+        // امتیاز
+        Route::post('score', [LoadController::class, 'score']);
+
+        // درخواست لیست بارهای راننده
+        Route::get('requestDriverLoadsList', [LoadController::class, 'requestDriverLoadsList']);
+
         // بررسی ثبت درخواست حمل توسط راننده
         Route::get('checkDriverInquiry/{load_id}', [LoadController::class, 'checkDriverInquiry']);
 
         // نزدیکترین بار به راننده
         Route::post('searchTheNearestCargo', [LoadController::class, 'searchTheNearestCargo']);
 
-        // درخواست لیست بارهای جدید برای راننده ها
-        Route::get('requestNewLoadsForDrivers/{driver}', [LoadController::class, 'requestNewLoadsForDrivers']);
-
         // جستجوی بار توسط راننده
-        Route::post('searchLoadForDriver/{driver}', [LoadController::class, 'searchLoadForDriver']);
+        Route::post('searchLoadForDriver', [LoadController::class, 'searchLoadForDriver']);
 
         // بررسی وضعیت شارژ راننده برای تماس
-        Route::get('checkDriverStatusForCalling/{driver}/{phoneNumber?}/{load_id?}/{latitude?}/{longitude?}', [DriverController::class, 'checkDriverStatusForCalling']);
+        Route::get('checkDriverStatusForCalling/{phoneNumber?}/{load_id?}/{latitude?}/{longitude?}', [DriverController::class, 'checkDriverStatusForCalling']);
 
         Route::get('getPackagesInfo', [DriverController::class, 'getPackagesInfo']);
 
-        Route::get('getLoadListFromDate/{driver}/{day}/{fleetId?}', [LoadController::class, 'getLoadListFromDate']);
+        Route::get('getLoadListFromDate/{day}/{fleetId?}', [LoadController::class, 'getLoadListFromDate']);
 
         // بارهای موجود در مقصد
-        Route::post('LoadsInDestinationCity/{driver}/{city}', [LoadController::class, 'LoadsInDestinationCity']);
+        Route::post('LoadsInDestinationCity/{city}', [LoadController::class, 'LoadsInDestinationCity']);
 
         // انتقاد یا شکایت راننده از صاحب بار یا باربری
-        Route::post('storeComplaintDriver/{driver}', [ComplaintController::class, 'storeComplaintDriver']);
+        Route::post('storeComplaintDriver', [ComplaintController::class, 'storeComplaintDriver']);
 
         // پیگیری انتقاد یا شکایت راننده از صاحب بار یا باربری
-        Route::post('getComplaintDriverResult/{driver}', [ComplaintController::class, 'getComplaintDriverResult']);
+        Route::post('getComplaintDriverResult', [ComplaintController::class, 'getComplaintDriverResult']);
 
         // لیست شکایات و انتقادات راننده
-        Route::get('getComplaintDriver/{driver}', [ComplaintController::class, 'getComplaintDriver']);
+        Route::get('getComplaintDriver', [ComplaintController::class, 'getComplaintDriver']);
 
         // بررسی وضعیت شارژ راننده برای قبول بار
-        Route::get('checkDriverStatusForAcceptLoad/{driver}', [DriverController::class, 'checkDriverStatusForAcceptLoad']);
+        Route::get('checkDriverStatusForAcceptLoad', [DriverController::class, 'checkDriverStatusForAcceptLoad']);
 
         // دریافت اطلاعات بار برای راننده
-        Route::get('getLoadInfo/{load_id}/{driver_id}', [LoadController::class, 'getLoadInfoForDriver']);
+        Route::get('getLoadInfo/{load_id}', [LoadController::class, 'getLoadInfoForDriver']);
 
         // دریافت جزئیات بار برای راننده
         Route::get('loadDetail/{load_id}', [LoadController::class, 'loadDetail']);
 
         Route::post('report', [ApiReportController::class, 'store']);
 
-
-        Route::group(['prefix' => 'v2'], function () {
-            // درخواست لیست بارهای جدید (ورژن 2)
-            Route::get('requestNewLoads/{driver}', [LoadController::class, 'requestNewLoadsForDriversV2']);
-        });
-
         // دریافت لیست بارها برای راننده به صورت صفحه بندی شده
         // از نسخه 52 به بعد این امکان را دارند
-        Route::get('getNewLoadForDriver/{driver}/{lastLoadId}', [LoadController::class, 'getNewLoadForDriver']);
+        Route::get('getNewLoadForDriver/{lastLoadId}', [LoadController::class, 'getNewLoadForDriver']);
 
         // تاریخچه تماس راننده
-        Route::get('callHistory/{driver}', [LoadController::class, 'callHistory']);
+        Route::get('callHistory', [LoadController::class, 'callHistory']);
 
         // دریافت اطلاعات پروفایل راننده
-        Route::get('getDriverProfileInfo/{driver}', [DriverController::class, 'getDriverProfileInfo']);
+        Route::get('getDriverProfileInfo', [DriverController::class, 'getDriverProfileInfo']);
 
         // بروز رسانی اطلاعات راننده
-        Route::put('updateDriverProfileInfo/{driver}', [DriverController::class, 'updateProfileInfo']);
+        Route::put('updateDriverProfileInfo', [DriverController::class, 'updateProfileInfo']);
 
 
-        Route::put('updateLocation/{driver}', [DriverController::class, 'updateLocation']);
+        Route::put('updateLocation', [DriverController::class, 'updateLocation']);
 
         //
-        Route::get('driverAppVersion/{driver}/{version}', [DriverController::class, 'driverAppVersion']);
-
-
-        Route::get('requestNewLoads/{driver}', [LoadController::class, 'requestNewLoadsForDriversV2']);
+        Route::get('driverAppVersion/{version}', [DriverController::class, 'driverAppVersion']);
 
         Route::get('driverMessages/{mobileNumber}', [ContactUsController::class, 'driverMessages']);
 
         // ذخیره توکن رانندگان
-        Route::patch('saveMyFireBaseToken/{driver}', [DriverController::class, 'saveMyFireBaseToken']);
+        Route::patch('saveMyFireBaseToken', [DriverController::class, 'saveMyFireBaseToken']);
 
     });
 

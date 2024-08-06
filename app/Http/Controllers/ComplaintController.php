@@ -11,15 +11,16 @@ use App\Models\Customer;
 use App\Models\Driver;
 use App\Models\Owner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class ComplaintController extends Controller
 {
     // انتقاد یا شکایت راننده از صاحب بار یا باربری
-    public function storeComplaintDriver(Request $request, Driver $driver)
+    public function storeComplaintDriver(Request $request)
     {
         try {
-
+            $driver = Driver::findOrFail(Auth::id());
             $complaintDriver = new ComplaintDriver();
             $complaintDriver->driver_id = $driver->id;
             $complaintDriver->title = $request->title;
@@ -47,10 +48,10 @@ class ComplaintController extends Controller
     }
 
     // پیگیری انتقاد یا شکایت راننده از صاحب بار یا باربری
-    public function getComplaintDriverResult(Request $request, Driver $driver)
+    public function getComplaintDriverResult(Request $request)
     {
         try {
-
+            $driver = Driver::findOrFail(Auth::id());
             $complaintDriver = ComplaintDriver::where([
                 ['driver_id', $driver->id],
                 ['trackingCode', $request->trackingCode]
@@ -80,9 +81,9 @@ class ComplaintController extends Controller
     }
 
     // لیست انقادات و شکایات راننده
-    public function getComplaintDriver($driver)
+    public function getComplaintDriver()
     {
-        $complaints = ComplaintDriver::where('driver_id', $driver)
+        $complaints = ComplaintDriver::where('driver_id', Auth::id())
             // ->select(['title', 'trackingCode', 'message', 'adminMessage'])
             ->orderByDesc('created_at')
             ->get();

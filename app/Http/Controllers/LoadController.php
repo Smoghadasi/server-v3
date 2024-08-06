@@ -1102,11 +1102,10 @@ class LoadController extends Controller
     }
 
     // درخواست لیست بارهای راننده
-    public function requestDriverLoadsList($driver_id)
+    public function requestDriverLoadsList()
     {
 
-        $driverLoads = DriverLoad::where('driver_id', $driver_id)->pluck('load_id');
-        // $driver = Driver::find($driver_id);
+        $driverLoads = DriverLoad::where('driver_id', Auth::id())->pluck('load_id');
 
         $loads = Load::join('province_cities as originCity', 'loads.origin_city_id', 'originCity.id')
             ->join('province_cities as destinationCity', 'loads.destination_city_id', 'destinationCity.id')
@@ -1792,7 +1791,7 @@ class LoadController extends Controller
     }
 
     // دریافت اطلاعات بار برای راننده
-    public function getLoadInfoForDriver($load_id, $driver_id)
+    public function getLoadInfoForDriver($load_id)
     {
 
         try {
@@ -2520,84 +2519,11 @@ class LoadController extends Controller
         ];
     }
 
-    public function requestNewLoadsForDriversV2(Driver $driver)
-    {
-
-        if ($driver->status == DE_ACTIVE)
-            return [
-                'result' => UN_SUCCESS,
-                'data' => ['driverStatus' => false],
-                'message' => 'حساب کاربری شما غیر فعال می باشد! لطفا جهت فعال سازی با شماره تلفن ' . TELL . ' تماس برقرار کنید.'
-            ];
-
-        try {
-            DriverActivity::firstOrCreate([
-                'driver_id' => $driver->id,
-                'persianDate' => DateController::createPersianDate()
-            ]);
-        } catch (\Exception $exception) {
-            Log::emergency("**************************************************************");
-            Log::emergency($exception->getMessage());
-            Log::emergency("**************************************************************");
-        }
-
-        try {
-            $loads = Load::where([
-                ['status', ON_SELECT_DRIVER],
-                ['created_at', '>', \date('Y-m-d h:i:s', strtotime('-1 day', time()))],
-                ['fleets', 'Like', '%fleet_id":' . $driver->fleet_id . ',%'],
-                ['driverCallCounter', '>', 0]
-            ])
-                ->select(
-                    'id',
-                    'weight',
-                    'numOfTrucks',
-                    'loadingHour',
-                    'loadingMinute',
-                    'proposedPriceForDriver',
-                    'suggestedPrice',
-                    'title',
-                    'priceBased',
-                    'userType',
-                    'urgent',
-                    'status',
-                    'created_at',
-                    'time',
-                    'fromCity',
-                    'toCity',
-                    'loadingDate',
-                    'fleets',
-                    'storeFor'
-                )
-                ->skip(0)
-                ->take(180)
-                ->orderBy('id', 'desc')
-                ->get();
-
-            if (count($loads))
-                return [
-                    'counts' => count($loads),
-                    'result' => SUCCESS,
-                    'loads' => $loads,
-                    'currentTime' => time(),
-                    'fleet_id' => $driver->fleet_id
-                ];
-        } catch (\Exception $exception) {
-            Log::emergency("******************************** requestNewLoadsForDriversV2 ******************************");
-            Log::emergency($exception->getMessage());
-            Log::emergency("*******************************************************************************************");
-        }
-
-        return [
-            'result' => UN_SUCCESS,
-            'data' => ['driverStatus' => true],
-            'message' => 'درحال حاضر باری برای ناوگان شما آماده نیست'
-        ];
-    }
 
     // دریافت لیست بارها برای راننده به صورت صفحه بندی شده
-    public function getNewLoadForDriver(Driver $driver, $lastLoadId = 0)
+    public function getNewLoadForDriver($lastLoadId = 0)
     {
+        $driver = Driver::findOrFail(Auth::id());
         if ($driver->version != 67) {
             $driver->version = 65;
         }
@@ -2644,7 +2570,6 @@ class LoadController extends Controller
                     'priceBased',
                     'mobileNumberForCoordination',
                     'urgent',
-                    // 'status',
                     'time',
                     'fromCity',
                     'toCity',
@@ -2654,13 +2579,6 @@ class LoadController extends Controller
                     'description',
                     'origin_city_id',
                     'destination_city_id',
-                    // 'created_at',
-                    // 'storeFor'
-                    // 'weight',
-                    // 'numOfTrucks',
-                    // 'loadingHour',
-                    // 'loadingMinute',
-                    // 'proposedPriceForDriver',
                     'userType',
                 )
                 ->skip(0)
@@ -2694,10 +2612,10 @@ class LoadController extends Controller
     }
 
     // تاریخچه لیست تماس های راننده
-    public function callHistory(string $driver_id)
+    public function callHistory()
     {
-        $driverCalls = Load::whereHas('driverCalls', function ($q) use ($driver_id) {
-            $q->where('driver_id', $driver_id);
+        $driverCalls = Load::whereHas('driverCalls', function ($q) {
+            $q->where('driver_id', Auth::id());
         })->select(
             'id',
             'suggestedPrice',
@@ -2724,13 +2642,13 @@ class LoadController extends Controller
     public function storeInquiryToLoad(Request $request)
     {
         $inquiry = Inquiry::where([
-            ['driver_id', $request->driver_id],
+            ['driver_id', Auth::id()],
             ['load_id', $request->load_id],
         ])->count();
 
 
         $load = Load::findOrFail($request->load_id);
-        $driver = Driver::findOrFail($request->driver_id);
+        $driver = Driver::findOrFail(Auth::id());
         $owner = Owner::where('mobileNumber', $load->mobileNumberForCoordination)->whereNotNull('FCM_token')->first();
 
         $cityFrom = ProvinceCity::where('id', $load->origin_city_id)->first();
@@ -2753,11 +2671,11 @@ class LoadController extends Controller
         // اگر قبلا ثبت قیمت ثبت کرده بروز شود
         if ($inquiry > 0) {
             Inquiry::where([
-                ['driver_id', $request->driver_id],
+                ['driver_id', Auth::id()],
                 ['load_id', $request->load_id],
             ])->update(['price' => $request->price]);
 
-            // $this->sendNewInquiryNotification($request->load_id, $request->price, $request->driver_id);
+            // $this->sendNewInquiryNotification($request->load_id, $request->price, Auth::id());
 
             return ['result' => SUCCESS];
         }
@@ -2765,7 +2683,7 @@ class LoadController extends Controller
         $city = ProvinceCity::where('parent_id', '!=', 0)->where('name', $request->city)->first();
 
         $inquiry = new Inquiry();
-        $inquiry->driver_id = $request->driver_id;
+        $inquiry->driver_id = Auth::id();
         $inquiry->load_id = $request->load_id;
         $inquiry->price = $request->price;
         $inquiry->city_id = $city ? $city->id : null;
@@ -2776,7 +2694,7 @@ class LoadController extends Controller
         $inquiry->save();
 
         if ($inquiry) {
-            // $this->sendNewInquiryNotification($request->load_id, $request->price, $request->driver_id);
+            // $this->sendNewInquiryNotification($request->load_id, $request->price, Auth::id());
             return ['result' => SUCCESS];
         }
 
@@ -3997,10 +3915,10 @@ class LoadController extends Controller
     }
 
     // جستجوی بار برای راننده
-    public function searchLoadForDriver(Request $request, Driver $driver)
+    public function searchLoadForDriver(Request $request)
     {
         try {
-
+            $driver = Driver::findOrFail(Auth::id());
             $rows = 50;
             $conditions = [];
             $loads = [];
@@ -4607,9 +4525,9 @@ class LoadController extends Controller
         return view('admin.listOfLoadsByOperator', compact('users', 'countOfToday', 'countOfThisWeek', 'countOfAll'));
     }
 
-    public function getLoadListFromDate(Driver $driver, $date, $fleetId = 0)
+    public function getLoadListFromDate($date, $fleetId = 0)
     {
-
+        $driver = Driver::findOrFail(Auth::id());
         try {
             DriverActivity::firstOrCreate([
                 'driver_id' => $driver->id,
@@ -4683,8 +4601,9 @@ class LoadController extends Controller
     }
 
     // بارهای موجود در مقصد
-    public function LoadsInDestinationCity(Driver $driver, string $city, $radius = 1000)
+    public function LoadsInDestinationCity(string $city, $radius = 1000)
     {
+        $driver = Driver::findOrFail(Auth::id());
         $rows = 150;
         $province_city = ProvinceCity::findOrFail($city);
 
@@ -5083,46 +5002,23 @@ class LoadController extends Controller
 
     public function score(Request $request)
     {
-        if ($request->type == 'Owner') {
-            $userOwner = Score::where('owner_id', '=', $request->owner_id)
-                ->where('driver_id', '=', $request->driver_id)
-                ->where('type', '=', 'Owner')
-                ->first();
+        $userDriver = Score::where('owner_id', '=', $request->owner_id)
+            ->where('driver_id', '=', $request->driver_id)
+            ->where('type', '=', 'Driver')
+            ->first();
 
-            if ($userOwner === null && $request->type == 'Owner') {
-                $score = new Score();
-                $score->owner_id = $request->owner_id;
-                $score->driver_id = $request->driver_id;
-                $score->value = $request->value;
-                $score->description = $request->description;
-                $score->type = $request->type;
-                $score->save();
-            } else {
-                $userOwner->value = $request->value;
-                $userOwner->save();
-            }
+        if ($userDriver === null) {
+            $scoreDriver = new Score();
+            $scoreDriver->owner_id = $request->owner_id;
+            $scoreDriver->driver_id = Auth::id();
+            $scoreDriver->value = $request->value;
+            $scoreDriver->description = $request->description;
+            $scoreDriver->type = $request->type;
+            $scoreDriver->save();
         } else {
-            $userDriver = Score::where('owner_id', '=', $request->owner_id)
-                ->where('driver_id', '=', $request->driver_id)
-                ->where('type', '=', 'Driver')
-                ->first();
-            if ($userDriver === null) {
-                $scoreDriver = new Score();
-                $scoreDriver->owner_id = $request->owner_id;
-                $scoreDriver->driver_id = $request->driver_id;
-                $scoreDriver->value = $request->value;
-                $scoreDriver->description = $request->description;
-                $scoreDriver->type = $request->type;
-                $scoreDriver->save();
-            } else {
-                $userDriver->value = $request->value;
-                $userDriver->save();
-            }
+            $userDriver->value = $request->value;
+            $userDriver->save();
         }
-
-
-
-
         return response()->json('OK', 200);
     }
 }
