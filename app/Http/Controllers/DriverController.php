@@ -536,7 +536,8 @@ class DriverController extends Controller
 
             return [
                 'result' => SUCCESS,
-                'token' => $token
+                'token' => $token,
+                'id' => $driver->id,
             ];
         }
 
