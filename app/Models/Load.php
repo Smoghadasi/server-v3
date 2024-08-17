@@ -22,6 +22,7 @@ class Load extends Model
         'ownerAuthenticated',
         'numOfRateDriver',
         'avarageRateOwner',
+        'freeCall',
     ];
 
     public function diver()
@@ -68,6 +69,16 @@ class Load extends Model
     public function getNumOfInquiryDriversAttribute()
     {
         return Inquiry::where('load_id', $this->id)->count();
+    }
+
+    public function getFreeCallAttribute()
+    {
+        if (FleetLoad::where('load_id', $this->id)->where('fleet_id', '!=', 82)->whereHas('cargo', function ($q) {
+            $q->where('userType', 'owner');
+        })->exists()) {
+            return true;
+        }
+        return false;
     }
 
 

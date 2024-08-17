@@ -2524,10 +2524,6 @@ class LoadController extends Controller
     public function getNewLoadForDriver($lastLoadId = 0)
     {
         $driver = Driver::findOrFail(Auth::id());
-        if ($driver->version != 67) {
-            $driver->version = 65;
-        }
-        $driver->save();
 
         if ($driver->status == DE_ACTIVE)
             return [
@@ -2591,11 +2587,8 @@ class LoadController extends Controller
 
             if (count($loads))
                 return [
-                    // 'counts' => count($loads),
                     'result' => SUCCESS,
                     'loads' => $loads,
-                    // 'currentTime' => time(),
-                    'token' => $driver->FCM_token,
                     'transactionCount' => $driver->transactionCount,
                     'Tel' => $setting->tel,
                 ];
