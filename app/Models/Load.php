@@ -75,7 +75,7 @@ class Load extends Model
     {
         if (FleetLoad::where('load_id', $this->id)->where('fleet_id', '!=', 82)->whereHas('cargo', function ($q) {
             $q->where('userType', 'owner');
-        })->exists()) {
+        })->exists() && $this->isBot == 0) {
             return true;
         }
         return false;
