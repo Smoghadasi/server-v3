@@ -1042,6 +1042,14 @@ class DriverController extends Controller
         return getDriverPackagesInfo();
     }
 
+    public function fleetDefault()
+    {
+        $fleet = Fleet::where('id', Auth::user()->fleet_id)
+            ->selet('id', 'title')
+            ->first();
+        return response()->json($fleet, 200);
+    }
+
     public function driversActivitiesCallDate($driversActivitiesCallDates = [], $showSearchResult = false)
     {
         if (!$showSearchResult) {

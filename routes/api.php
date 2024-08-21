@@ -522,7 +522,9 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
 
         Route::put('updateLocation', [DriverController::class, 'updateLocation']);
 
-        //
+        Route::get('fleetDefault', [DriverController::class, 'fleetDefault']);
+
+
         Route::get('driverAppVersion/{version}', [DriverController::class, 'driverAppVersion']);
 
         Route::get('driverMessages/{mobileNumber}', [ContactUsController::class, 'driverMessages']);
