@@ -1045,7 +1045,7 @@ class DriverController extends Controller
     public function fleetDefault()
     {
         $fleet = Fleet::where('id', Auth::user()->fleet_id)
-            ->selet('id', 'title')
+            ->select('id', 'title')
             ->first();
         return response()->json($fleet, 200);
     }
