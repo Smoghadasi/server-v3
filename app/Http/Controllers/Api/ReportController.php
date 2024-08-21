@@ -28,7 +28,7 @@ class ReportController extends Controller
         $report->description = $request->description;
         $report->load_id = $request->load_id;
         $report->driver_id = Auth::id();
-        $report->owner_id = $load->user_id;
+        // $report->owner_id = $load->user_id;
         $report->save();
 
         return response()->json('OK', 200);
