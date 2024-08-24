@@ -215,8 +215,6 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
     // ثبت نام راننده
     Route::post('driver/registerDriver', [DriverController::class, 'registerDriver']);
 
-    // ثبت قیمت جدید در استعلام بار
-    Route::post('driver/storeInquiryToLoad', [LoadController::class, 'storeInquiryToLoad']);
 
     // درخواست لیست قیمت های استعلام بار راننده
     Route::get('driver/requestInquiriesOfLoad/{load_id}', [LoadController::class, 'requestInquiriesOfLoad']);
@@ -463,6 +461,10 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
 
         // امتیاز
         Route::post('score', [LoadController::class, 'score']);
+
+        // ثبت قیمت جدید در استعلام بار
+        Route::post('storeInquiryToLoad', [LoadController::class, 'storeInquiryToLoad']);
+
 
         // درخواست لیست بارهای راننده
         Route::get('requestDriverLoadsList', [LoadController::class, 'requestDriverLoadsList']);
