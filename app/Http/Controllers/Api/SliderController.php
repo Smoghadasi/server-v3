@@ -10,7 +10,10 @@ class SliderController extends Controller
 {
     public function index()
     {
-        $sliders = Slider::where('status', 1)->orderByDesc('sort')->get();
+        $sliders = Slider::where('status', 1)
+            ->select('file_url')
+            ->orderByDesc('sort')
+            ->get();
         return response()->json($sliders, 200);
     }
 }
