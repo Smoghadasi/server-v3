@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Event\PostCargoNotificationEvent;
 use App\Event\PostCargoSmsEvent;
 use App\Http\Requests\NewLoadRequest;
-use App\Jobs\SendSmsJob;
 use App\Models\Bearing;
 use App\Models\BlockedIp;
 use App\Models\CityDistanceCalculate;
@@ -18,7 +16,6 @@ use App\Models\Driver;
 use App\Models\DriverActivity;
 use App\Models\DriverCall;
 use App\Models\DriverLoad;
-use App\Models\DriverVisitLoad;
 use App\Models\Fleet;
 use App\Models\FleetLoad;
 use App\Models\FleetOperator;
@@ -1906,7 +1903,6 @@ class LoadController extends Controller
         try {
             event(new PostCargoSmsEvent($load));
             return back()->with('success', 'با موفقیت ارسال شد');
-
         } catch (\Exception $exception) {
             Log::emergency("******************************** send Notification Manual ******************************");
             Log::emergency($exception->getMessage());
@@ -3153,6 +3149,9 @@ class LoadController extends Controller
                     "title" => $title,
                     "body" => $body
                 ],
+                "data" => [
+                    "route" => "/755840"
+                ]
             ],
         ];
 
@@ -3912,7 +3911,7 @@ class LoadController extends Controller
     {
         try {
             $driver = Driver::findOrFail(Auth::id());
-            $rows = 50;
+            $rows = 25;
             $conditions = [];
             $loads = [];
 
