@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\OwnerController;
 use App\Http\Controllers\Api\ProvinceCityController;
 use App\Http\Controllers\Api\RadioController;
 use App\Http\Controllers\Api\ReportController as ApiReportController;
+use App\Http\Controllers\Api\SliderController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\BearingController;
@@ -230,6 +231,10 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
 
     // درخواست اطلاعات پروفایل راننده
     Route::get('driver/requestDriverProfileInfo/{driver_id}', [DriverController::class, 'requestDriverProfileInfo']);
+
+
+    Route::get('slider', [SliderController::class, 'index']);
+
 
     // حذف مسیر پیشفرض راننده
     Route::post('driver/removePath', [DriverController::class, 'removePath']);
