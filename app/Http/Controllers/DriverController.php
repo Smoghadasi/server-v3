@@ -928,8 +928,8 @@ class DriverController extends Controller
                 $driverCall->callingDate = date("Y-m-d");
                 $driverCall->date = gregorianDateToPersian(date('Y/m/d', time()), '/');
                 $driverCall->dateTime = now()->format('H:i:s');
-                $driverCall->latitude = $latitude == 0 ? 0 : $latitude;
-                $driverCall->longitude = $longitude == 0 ? 0 : $longitude;
+                $driverCall->latitude = 0;
+                $driverCall->longitude = 0;
                 $driverCall->save();
 
 

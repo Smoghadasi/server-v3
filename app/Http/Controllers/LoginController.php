@@ -161,9 +161,10 @@ class LoginController extends Controller
         if ($this->verifyActivationCode($mobileNumber, $code) == SUCCESS) {
 
             $driver = Driver::where('mobileNumber', '=', $mobileNumber)->first();
-            $token = $driver->createToken('myapptoken')->plainTextToken;
+
 
             if ($driver) {
+                $token = $driver->createToken('myapptoken')->plainTextToken;
                 // قبلا این راننده ذخیره شده است
                 return [
                     'result' => IS_MEMBER,
