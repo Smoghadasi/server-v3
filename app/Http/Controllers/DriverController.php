@@ -948,6 +948,78 @@ class DriverController extends Controller
                 }
 
                 return ['result' => true];
+            } elseif (FleetLoad::where('load_id', $load_id)->where('fleet_id', '!=', 82)->whereHas('cargo', function ($q) {
+                $q->where('userType', 'owner');
+                $q->where('isBot', 0);
+            })->exists()) {
+                if (DriverCall::where('load_id', $load_id)->where('driver_id', $driver->id)->count() > 0) {
+                    return ['result' => true];
+                }
+
+                $persian_date = gregorianDateToPersian(date('Y/m/d', time()), '/');
+
+                // گزارش رانندگان بر اساس تماس
+                $driverCallCount = DriverCallCount::where('driver_id', $driver->id)
+                    ->where('persian_date', $persian_date)
+                    ->first();
+                if (isset($driverCallCount->id)) {
+                    $driverCallCount->calls += 1;
+                    $driverCallCount->created_date = $driver->created_at;
+                    $driverCallCount->save();
+                } else {
+                    $driverCallCount = new DriverCallCount();
+                    $driverCallCount->persian_date = $persian_date;
+                    $driverCallCount->calls = 1;
+                    $driverCallCount->driver_id = $driver->id;
+                    $driverCallCount->created_date = $driver->created_at;
+                    $driverCallCount->save();
+                }
+
+                // فعالیت رانندگان بر اساس تماس
+                if (DriverCall::where('created_at', '>', date("Y-m-d", time()) . " 00:00:00")->where('driver_id', $driver->id)->count() == 0) {
+
+                    // گزارش رانندگان بر اساس ناوگان
+                    $driverCallReport = DriverCallReport::where('fleet_id', $driver->fleet_id)
+                        ->where('persian_date', $persian_date)
+                        ->first();
+                    if (isset($driverCallReport->id)) {
+                        $driverCallReport->calls += 1;
+                        $driverCallReport->save();
+                    } else {
+                        $driverCallReport = new DriverCallReport();
+                        $driverCallReport->persian_date = $persian_date;
+                        $driverCallReport->calls = 1;
+                        $driverCallReport->fleet_id = $driver->fleet_id;
+                        $driverCallReport->save();
+                    }
+                }
+
+                $driverCall = new DriverCall();
+                $driverCall->driver_id = $driver->id;
+                $driverCall->load_id = $load_id;
+                $driverCall->phoneNumber = $phoneNumber;
+                $driverCall->callingDate = date("Y-m-d");
+                $driverCall->date = gregorianDateToPersian(date('Y/m/d', time()), '/');
+                $driverCall->dateTime = now()->format('H:i:s');
+                $driverCall->latitude = 0;
+                $driverCall->longitude = 0;
+                $driverCall->save();
+
+                $load = Load::find($load_id);
+
+                if (isset($load->id) && $load->operator_id > 0 || $load->isBot == 1) {
+
+                    $load->driverCallCounter--;
+                    $load->save();
+                    $fleets = json_decode($load->fleets, true);
+                    foreach ($fleets as $fleet) {
+                        if (($fleet['fleet_id'] == 86 || $fleet['fleet_id'] == 82) && $load->driverCallCounter <= 0) {
+                            $load->delete();
+                        }
+                    }
+                }
+
+                return ['result' => true];
             }
         } catch (Exception $exception) {
             Log::emergency($exception->getMessage());
