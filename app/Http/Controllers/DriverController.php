@@ -856,38 +856,38 @@ class DriverController extends Controller
             if ($load === null) {
                 return ['result' => 2];
             }
-            $checkDriverFleet = DriverFleet::where('fleet_id', $driver->fleet_id)->where('driver_id', $driver->id)->first();
-            if (
-                $driver->fleet_id == 48 ||
-                $driver->fleet_id == 50 ||
-                $driver->fleet_id == 51 ||
-                $driver->fleet_id == 56 ||
-                $driver->fleet_id == 57 ||
-                $driver->fleet_id == 58 ||
-                $driver->fleet_id == 63 ||
-                $driver->fleet_id == 66 ||
-                $driver->fleet_id == 78 ||
-                $driver->fleet_id == 79
-            ) {
-                if ($checkDriverFleet === null) {
-                    $driverFleet = new DriverFleet();
-                    $driverFleet->fleet_id = $driver->fleet_id;
-                    $driverFleet->driver_id = $driver->id;
-                    $driverFleet->freeCall = 300;
-                    $driverFleet->save();
-                    return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
-                } else {
-                    if ($checkDriverFleet->freeCall > 0) {
-                        $checkDriverFleet->freeCall -= 1;
-                        $checkDriverFleet->save();
-                        return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
-                    } else {
-                        return [
-                            'result' => false
-                        ];
-                    }
-                }
-            }
+            // $checkDriverFleet = DriverFleet::where('fleet_id', $driver->fleet_id)->where('driver_id', $driver->id)->first();
+            // if (
+            //     $driver->fleet_id == 48 ||
+            //     $driver->fleet_id == 50 ||
+            //     $driver->fleet_id == 51 ||
+            //     $driver->fleet_id == 56 ||
+            //     $driver->fleet_id == 57 ||
+            //     $driver->fleet_id == 58 ||
+            //     $driver->fleet_id == 63 ||
+            //     $driver->fleet_id == 66 ||
+            //     $driver->fleet_id == 78 ||
+            //     $driver->fleet_id == 79
+            // ) {
+            //     if ($checkDriverFleet === null) {
+            //         $driverFleet = new DriverFleet();
+            //         $driverFleet->fleet_id = $driver->fleet_id;
+            //         $driverFleet->driver_id = $driver->id;
+            //         $driverFleet->freeCall = 300;
+            //         $driverFleet->save();
+            //         return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
+            //     } else {
+            //         if ($checkDriverFleet->freeCall > 0) {
+            //             $checkDriverFleet->freeCall -= 1;
+            //             $checkDriverFleet->save();
+            //             return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
+            //         } else {
+            //             return [
+            //                 'result' => false
+            //             ];
+            //         }
+            //     }
+            // }
 
             if ($driver->activeDate > date("Y-m-d H:i:s", time()) || $driver->freeCalls > 0) {
                 return $this->checkCreditDriver($driver, $load_id, $phoneNumber, true);
@@ -911,9 +911,9 @@ class DriverController extends Controller
         }
         if ($checkFreeCall == true) {
             if ($driver->activeDate < date("Y-m-d H:i:s", time())) {
-                $driverFleet = DriverFleet::where('fleet_id', $driver->fleet_id)->where('driver_id', $driver->id)->first();
-                $driverFleet->freeCall--;
-                $driverFleet->save();
+                // $driverFleet = DriverFleet::where('fleet_id', $driver->fleet_id)->where('driver_id', $driver->id)->first();
+                // $driverFleet->freeCall--;
+                // $driverFleet->save();
                 $driver->freeCalls--;
                 $driver->save();
             }
