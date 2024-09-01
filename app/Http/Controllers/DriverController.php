@@ -879,12 +879,12 @@ class DriverController extends Controller
                     $driverFleet->driver_id = $driver->id;
                     $driverFleet->freeCall = 300;
                     $driverFleet->save();
-                    $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
+                    return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
                 } else {
                     if ($checkDriverFleet->freeCall > 0) {
                         $checkDriverFleet->freeCall -= 1;
                         $checkDriverFleet->save();
-                        $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
+                        return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
                     } else {
                         return [
                             'result' => false
