@@ -13,6 +13,7 @@ use App\Models\DriverCall;
 use App\Models\DriverCallCount;
 use App\Models\DriverCallReport;
 use App\Models\DriverDefaultPath;
+use App\Models\DriverFleet;
 use App\Models\Fleet;
 use App\Models\FleetLoad;
 use App\Models\FreeSubscription;
@@ -851,175 +852,54 @@ class DriverController extends Controller
         try {
             $load = Load::where('id', '=', $load_id)->first();
             $driver = Driver::findOrFail(Auth::id());
-            // $owner = Owner::where('mobileNumber', $load->mobileNumberForCoordination)->whereNotNull('FCM_token')->first();
-            // $cityFrom = ProvinceCity::findOrFail($load->origin_city_id);
-            // $cityTo = ProvinceCity::findOrFail($load->destination_city_id);
-
-            // if ($owner) {
-            //     try {
-            //         $title = 'ایران ترابر صاحبان بار';
-            //         $body = $driver->name . ' ' . $driver->lastName . ' راننده ' . '(' . $driver->fleetTitle . ')' . ' جهت حمل بار از ' . $cityFrom->name . ' به ' . $cityTo->name . ' با شما تماس گرفته است.';
-
-            //         $this->sendNotification($owner->FCM_token, $title, $body);
-            //     } catch (\Exception $exception) {
-            //         Log::emergency("----------------------send notif storeInquiryToLoad-----------------------");
-            //         Log::emergency($exception);
-            //         Log::emergency("---------------------------------------------------------");
-            //     }
-            // }
 
             if ($load === null) {
                 return ['result' => 2];
             }
 
-            if ($driver->activeDate > date("Y-m-d H:i:s", time()) || $driver->freeCalls > 0) {
-
-                if (DriverCall::where('load_id', $load_id)->where('driver_id', $driver->id)->count() > 0) {
-                    return ['result' => true];
-                }
-
-                if ($driver->activeDate < date("Y-m-d H:i:s", time())) {
-                    $driver->freeCalls--;
-                    $driver->save();
-                }
-
-                $persian_date = gregorianDateToPersian(date('Y/m/d', time()), '/');
-
-                // گزارش رانندگان بر اساس تماس
-                $driverCallCount = DriverCallCount::where('driver_id', $driver->id)
-                    ->where('persian_date', $persian_date)
-                    ->first();
-                if (isset($driverCallCount->id)) {
-                    $driverCallCount->calls += 1;
-                    $driverCallCount->created_date = $driver->created_at;
-                    $driverCallCount->save();
+            if (
+                $driver->fleet_id == 48 ||
+                $driver->fleet_id == 50 ||
+                $driver->fleet_id == 51 ||
+                $driver->fleet_id == 56 ||
+                $driver->fleet_id == 57 ||
+                $driver->fleet_id == 58 ||
+                $driver->fleet_id == 63 ||
+                $driver->fleet_id == 66 ||
+                $driver->fleet_id == 78 ||
+                $driver->fleet_id == 79 ||
+                $driver->fleet_id == 83 ||
+                $driver->fleet_id == 84 ||
+                $driver->fleet_id == 87
+            ) {
+                $checkDriverFleet = DriverFleet::where('fleet_id', $driver->fleet_id)->where('driver_id', $driver->id)->first();
+                if ($checkDriverFleet === null) {
+                    $driverFleet = new DriverFleet();
+                    $driverFleet->fleet_id = $driver->fleet_id;
+                    $driverFleet->driver_id = $driver->id;
+                    $driverFleet->freeCall = 300;
+                    $driverFleet->save();
+                    $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
                 } else {
-                    $driverCallCount = new DriverCallCount();
-                    $driverCallCount->persian_date = $persian_date;
-                    $driverCallCount->calls = 1;
-                    $driverCallCount->driver_id = $driver->id;
-                    $driverCallCount->created_date = $driver->created_at;
-                    $driverCallCount->save();
-                }
-
-                // فعالیت رانندگان بر اساس تماس
-                if (DriverCall::where('created_at', '>', date("Y-m-d", time()) . " 00:00:00")->where('driver_id', $driver->id)->count() == 0) {
-
-                    // گزارش رانندگان بر اساس ناوگان
-                    $driverCallReport = DriverCallReport::where('fleet_id', $driver->fleet_id)
-                        ->where('persian_date', $persian_date)
-                        ->first();
-                    if (isset($driverCallReport->id)) {
-                        $driverCallReport->calls += 1;
-                        $driverCallReport->save();
+                    if ($checkDriverFleet->freeCall > 0) {
+                        $checkDriverFleet->freeCall -= 1;
+                        $checkDriverFleet->save();
+                        $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
                     } else {
-                        $driverCallReport = new DriverCallReport();
-                        $driverCallReport->persian_date = $persian_date;
-                        $driverCallReport->calls = 1;
-                        $driverCallReport->fleet_id = $driver->fleet_id;
-                        $driverCallReport->save();
+                        return [
+                            'result' => false
+                        ];
                     }
                 }
+            }
 
-                $driverCall = new DriverCall();
-                $driverCall->driver_id = $driver->id;
-                $driverCall->load_id = $load_id;
-                $driverCall->phoneNumber = $phoneNumber;
-                $driverCall->callingDate = date("Y-m-d");
-                $driverCall->date = gregorianDateToPersian(date('Y/m/d', time()), '/');
-                $driverCall->dateTime = now()->format('H:i:s');
-                $driverCall->latitude = 0;
-                $driverCall->longitude = 0;
-                $driverCall->save();
-
-
-                $load = Load::find($load_id);
-
-                if (isset($load->id) && $load->operator_id > 0 || $load->isBot == 1) {
-
-                    $load->driverCallCounter--;
-                    $load->save();
-                    $fleets = json_decode($load->fleets, true);
-                    foreach ($fleets as $fleet) {
-                        if (($fleet['fleet_id'] == 86 || $fleet['fleet_id'] == 82) && $load->driverCallCounter <= 0) {
-                            $load->delete();
-                        }
-                    }
-                }
-
-                return ['result' => true];
+            if ($driver->activeDate > date("Y-m-d H:i:s", time()) || $driver->freeCalls > 0) {
+                $this->checkCreditDriver($driver, $load_id, $phoneNumber, true);
             } elseif (FleetLoad::where('load_id', $load_id)->where('fleet_id', '!=', 82)->whereHas('cargo', function ($q) {
                 $q->where('userType', 'owner');
                 $q->where('isBot', 0);
             })->exists()) {
-                if (DriverCall::where('load_id', $load_id)->where('driver_id', $driver->id)->count() > 0) {
-                    return ['result' => true];
-                }
-
-                $persian_date = gregorianDateToPersian(date('Y/m/d', time()), '/');
-
-                // گزارش رانندگان بر اساس تماس
-                $driverCallCount = DriverCallCount::where('driver_id', $driver->id)
-                    ->where('persian_date', $persian_date)
-                    ->first();
-                if (isset($driverCallCount->id)) {
-                    $driverCallCount->calls += 1;
-                    $driverCallCount->created_date = $driver->created_at;
-                    $driverCallCount->save();
-                } else {
-                    $driverCallCount = new DriverCallCount();
-                    $driverCallCount->persian_date = $persian_date;
-                    $driverCallCount->calls = 1;
-                    $driverCallCount->driver_id = $driver->id;
-                    $driverCallCount->created_date = $driver->created_at;
-                    $driverCallCount->save();
-                }
-
-                // فعالیت رانندگان بر اساس تماس
-                if (DriverCall::where('created_at', '>', date("Y-m-d", time()) . " 00:00:00")->where('driver_id', $driver->id)->count() == 0) {
-
-                    // گزارش رانندگان بر اساس ناوگان
-                    $driverCallReport = DriverCallReport::where('fleet_id', $driver->fleet_id)
-                        ->where('persian_date', $persian_date)
-                        ->first();
-                    if (isset($driverCallReport->id)) {
-                        $driverCallReport->calls += 1;
-                        $driverCallReport->save();
-                    } else {
-                        $driverCallReport = new DriverCallReport();
-                        $driverCallReport->persian_date = $persian_date;
-                        $driverCallReport->calls = 1;
-                        $driverCallReport->fleet_id = $driver->fleet_id;
-                        $driverCallReport->save();
-                    }
-                }
-
-                $driverCall = new DriverCall();
-                $driverCall->driver_id = $driver->id;
-                $driverCall->load_id = $load_id;
-                $driverCall->phoneNumber = $phoneNumber;
-                $driverCall->callingDate = date("Y-m-d");
-                $driverCall->date = gregorianDateToPersian(date('Y/m/d', time()), '/');
-                $driverCall->dateTime = now()->format('H:i:s');
-                $driverCall->latitude = 0;
-                $driverCall->longitude = 0;
-                $driverCall->save();
-
-                $load = Load::find($load_id);
-
-                if (isset($load->id) && $load->operator_id > 0 || $load->isBot == 1) {
-
-                    $load->driverCallCounter--;
-                    $load->save();
-                    $fleets = json_decode($load->fleets, true);
-                    foreach ($fleets as $fleet) {
-                        if (($fleet['fleet_id'] == 86 || $fleet['fleet_id'] == 82) && $load->driverCallCounter <= 0) {
-                            $load->delete();
-                        }
-                    }
-                }
-
-                return ['result' => true];
+                $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
             }
         } catch (Exception $exception) {
             Log::emergency($exception->getMessage());
@@ -1028,6 +908,85 @@ class DriverController extends Controller
         return [
             'result' => false
         ];
+    }
+
+    public function checkCreditDriver($driver, $load_id, $phoneNumber, $checkFreeCall)
+    {
+        if (DriverCall::where('load_id', $load_id)->where('driver_id', $driver->id)->count() > 0) {
+            return ['result' => true];
+        }
+        if ($checkFreeCall == true) {
+            if ($driver->activeDate < date("Y-m-d H:i:s", time())) {
+                $driver->freeCalls--;
+                $driver->save();
+            }
+        }
+
+        $persian_date = gregorianDateToPersian(date('Y/m/d', time()), '/');
+
+        // گزارش رانندگان بر اساس تماس
+        $driverCallCount = DriverCallCount::where('driver_id', $driver->id)
+            ->where('persian_date', $persian_date)
+            ->first();
+        if (isset($driverCallCount->id)) {
+            $driverCallCount->calls += 1;
+            $driverCallCount->created_date = $driver->created_at;
+            $driverCallCount->save();
+        } else {
+            $driverCallCount = new DriverCallCount();
+            $driverCallCount->persian_date = $persian_date;
+            $driverCallCount->calls = 1;
+            $driverCallCount->driver_id = $driver->id;
+            $driverCallCount->created_date = $driver->created_at;
+            $driverCallCount->save();
+        }
+
+        // فعالیت رانندگان بر اساس تماس
+        if (DriverCall::where('created_at', '>', date("Y-m-d", time()) . " 00:00:00")->where('driver_id', $driver->id)->count() == 0) {
+
+            // گزارش رانندگان بر اساس ناوگان
+            $driverCallReport = DriverCallReport::where('fleet_id', $driver->fleet_id)
+                ->where('persian_date', $persian_date)
+                ->first();
+            if (isset($driverCallReport->id)) {
+                $driverCallReport->calls += 1;
+                $driverCallReport->save();
+            } else {
+                $driverCallReport = new DriverCallReport();
+                $driverCallReport->persian_date = $persian_date;
+                $driverCallReport->calls = 1;
+                $driverCallReport->fleet_id = $driver->fleet_id;
+                $driverCallReport->save();
+            }
+        }
+
+        $driverCall = new DriverCall();
+        $driverCall->driver_id = $driver->id;
+        $driverCall->load_id = $load_id;
+        $driverCall->phoneNumber = $phoneNumber;
+        $driverCall->callingDate = date("Y-m-d");
+        $driverCall->date = gregorianDateToPersian(date('Y/m/d', time()), '/');
+        $driverCall->dateTime = now()->format('H:i:s');
+        $driverCall->latitude = 0;
+        $driverCall->longitude = 0;
+        $driverCall->save();
+
+
+        $load = Load::find($load_id);
+
+        if (isset($load->id) && $load->operator_id > 0 || $load->isBot == 1) {
+
+            $load->driverCallCounter--;
+            $load->save();
+            $fleets = json_decode($load->fleets, true);
+            foreach ($fleets as $fleet) {
+                if (($fleet['fleet_id'] == 86 || $fleet['fleet_id'] == 82) && $load->driverCallCounter <= 0) {
+                    $load->delete();
+                }
+            }
+        }
+
+        return ['result' => true];
     }
 
     public function getPackagesInfo()
