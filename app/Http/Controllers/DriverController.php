@@ -856,7 +856,15 @@ class DriverController extends Controller
             if ($load === null) {
                 return ['result' => 2];
             }
-
+            $checkDriverFleet = DriverFleet::where('fleet_id', $driver->fleet_id)->where('driver_id', $driver->id)->first();
+            // $checkDriverFleet = DriverFleet::firstOrCreate([
+            //     'fleet_id' => $driver->fleet_id,
+            //     'driver_id' => $driver->driver_id,
+            // ], [
+            //     'fleet_id' => $driver->fleet_id,
+            //     'driver_id' => $driver->driver_id,
+            //     'freeCall' => 0,
+            // ]);
             if (
                 $driver->fleet_id == 48 ||
                 $driver->fleet_id == 50 ||
@@ -869,7 +877,6 @@ class DriverController extends Controller
                 $driver->fleet_id == 78 ||
                 $driver->fleet_id == 79
             ) {
-                $checkDriverFleet = DriverFleet::where('fleet_id', $driver->fleet_id)->where('driver_id', $driver->id)->first();
                 if ($checkDriverFleet === null) {
                     $driverFleet = new DriverFleet();
                     $driverFleet->fleet_id = $driver->fleet_id;
@@ -888,9 +895,17 @@ class DriverController extends Controller
                         ];
                     }
                 }
+            } else {
+                if ($checkDriverFleet === null) {
+                    $driverFleet = new DriverFleet();
+                    $driverFleet->fleet_id = $driver->fleet_id;
+                    $driverFleet->driver_id = $driver->id;
+                    $driverFleet->freeCall = $driver->freeCalls;
+                    $driverFleet->save();
+                }
             }
 
-            if ($driver->activeDate > date("Y-m-d H:i:s", time()) || $driver->freeCalls > 0) {
+            if ($driver->activeDate > date("Y-m-d H:i:s", time()) || $checkDriverFleet ? $checkDriverFleet->freeCall > 0 : $driverFleet->freeCall > 0) {
                 return $this->checkCreditDriver($driver, $load_id, $phoneNumber, true);
             } elseif (FleetLoad::where('load_id', $load_id)->where('fleet_id', '!=', 82)->whereHas('cargo', function ($q) {
                 $q->where('userType', 'owner');
@@ -912,8 +927,11 @@ class DriverController extends Controller
         }
         if ($checkFreeCall == true) {
             if ($driver->activeDate < date("Y-m-d H:i:s", time())) {
-                $driver->freeCalls--;
-                $driver->save();
+                $driverFleet = DriverFleet::where('fleet_id', $driver->fleet_id)->where('driver_id', $driver->id)->first();
+                if ($driverFleet) {
+                    $driverFleet->freeCall--;
+                    $driverFleet->save();
+                }
             }
         }
 
