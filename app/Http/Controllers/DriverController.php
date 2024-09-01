@@ -867,10 +867,7 @@ class DriverController extends Controller
                 $driver->fleet_id == 63 ||
                 $driver->fleet_id == 66 ||
                 $driver->fleet_id == 78 ||
-                $driver->fleet_id == 79 ||
-                $driver->fleet_id == 83 ||
-                $driver->fleet_id == 84 ||
-                $driver->fleet_id == 87
+                $driver->fleet_id == 79
             ) {
                 $checkDriverFleet = DriverFleet::where('fleet_id', $driver->fleet_id)->where('driver_id', $driver->id)->first();
                 if ($checkDriverFleet === null) {
@@ -905,9 +902,7 @@ class DriverController extends Controller
             Log::emergency($exception->getMessage());
         }
 
-        return [
-            'result' => false
-        ];
+        return ['result' => false];
     }
 
     public function checkCreditDriver($driver, $load_id, $phoneNumber, $checkFreeCall)
