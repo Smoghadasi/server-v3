@@ -8,4 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class DriverFleet extends Model
 {
     use HasFactory;
+
+    protected $guarded = [];
+
+
+    public function driver()
+    {
+        return $this->belongsTo(Driver::class);
+    }
+
+    public function fleet()
+    {
+        return $this->belongsTo(Fleet::class);
+    }
 }
