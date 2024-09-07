@@ -8,6 +8,7 @@ use App\Models\DriverActivity;
 use App\Models\Owner;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class NotificationController extends Controller
@@ -88,7 +89,7 @@ class NotificationController extends Controller
         $notification = $request->notification;
 
         if ($userType == 'driver') {
-            Driver::where('id', $request->driver_id)
+            Driver::where('id', Auth::id())
                 ->update(['notification' => $notification]);
             return [
                 'result' => SUCCESS

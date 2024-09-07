@@ -1365,7 +1365,8 @@ class DriverController extends Controller
                 'authStatus' => $driver->authLevel,
                 'driverAuthStatusTitles' => DRIVER_AUTH_STATUS_TITLE,
                 'address' => $driver->address,
-                'ratingDriver' => $driver->ratingDriver
+                'ratingDriver' => $driver->ratingDriver,
+                'notification' => $driver->notification,
             ]
         ]);
     }

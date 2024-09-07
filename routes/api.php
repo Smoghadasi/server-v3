@@ -275,7 +275,6 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
     /********************************************************************************************/
 
     // غیرفعال کردن نوتیفیکیشن
-    Route::post('driver/changeNotificationFunction', [NotificationController::class, 'changeNotificationFunction']);
     Route::post('bearing/changeNotificationFunction', [NotificationController::class, 'changeNotificationFunction']);
     Route::post('customer/changeNotificationFunction', [NotificationController::class, 'changeNotificationFunction']);
 
@@ -538,6 +537,9 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
 
         // ذخیره توکن رانندگان
         Route::patch('saveMyFireBaseToken', [DriverController::class, 'saveMyFireBaseToken']);
+
+        Route::post('changeNotificationFunction', [NotificationController::class, 'changeNotificationFunction']);
+
 
     });
 
