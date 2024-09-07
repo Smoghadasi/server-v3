@@ -662,7 +662,7 @@ Route::get('DidarCallBack', function () {
 });
 
 Route::post('botData', function (Request $request) {
-    Log::warning($request);
+    // Log::warning($request);
     // try {
     //     $data = convertFaNumberToEn($request->data);
     //     preg_match('/09\d{2}/', $data, $matches);
