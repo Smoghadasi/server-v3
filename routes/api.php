@@ -29,6 +29,7 @@ use App\Models\Dictionary;
 use App\Models\Driver;
 use App\Models\Load;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -661,28 +662,28 @@ Route::get('DidarCallBack', function () {
 });
 
 Route::post('botData', function (Request $request) {
+    Log::warning($request);
+    // try {
+    //     $data = convertFaNumberToEn($request->data);
+    //     preg_match('/09\d{2}/', $data, $matches);
 
-    try {
-        $data = convertFaNumberToEn($request->data);
-        preg_match('/09\d{2}/', $data, $matches);
+    //     $cargoConvertListCount = CargoConvertList::where([
+    //         ['cargo', $data],
+    //         ['created_at', '>', date('Y-m-d h:i:s', strtotime('-180 minute', time()))]
+    //     ])->count();
+    //     if ($cargoConvertListCount == 0 && isset($matches[0])) {
+    //         $cargoConvertList = new CargoConvertList();
+    //         $cargoConvertList->cargo = $data;
+    //         $cargoConvertList->save();
+    //     }
+    //     return 'OK';
+    // } catch (Exception $exception) {
+    //     \Illuminate\Support\Facades\Log::emergency("------------------- botData ERROR ---------------------");
+    //     \Illuminate\Support\Facades\Log::emergency($exception->getMessage());
+    //     \Illuminate\Support\Facades\Log::emergency("------------------- End botData ERROR ---------------------");
+    // }
 
-        $cargoConvertListCount = CargoConvertList::where([
-            ['cargo', $data],
-            ['created_at', '>', date('Y-m-d h:i:s', strtotime('-180 minute', time()))]
-        ])->count();
-        if ($cargoConvertListCount == 0 && isset($matches[0])) {
-            $cargoConvertList = new CargoConvertList();
-            $cargoConvertList->cargo = $data;
-            $cargoConvertList->save();
-        }
-        return 'OK';
-    } catch (Exception $exception) {
-        \Illuminate\Support\Facades\Log::emergency("------------------- botData ERROR ---------------------");
-        \Illuminate\Support\Facades\Log::emergency($exception->getMessage());
-        \Illuminate\Support\Facades\Log::emergency("------------------- End botData ERROR ---------------------");
-    }
-
-    return 'ERROR';
+    // return 'ERROR';
 });
 
 
