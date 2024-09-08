@@ -663,18 +663,31 @@ Route::get('DidarCallBack', function () {
 });
 
 Route::post('botData', function (Request $request) {
-    try {
-        // Log::alert($request->gpt_response);
-        $warehouse = new Warehouse();
-        $warehouse->origin = $request->gpt_response->origin;
-        $warehouse->destination = $request->gpt_response->destination;
-        $warehouse->fleet = $request->gpt_response->fleet;
-        $warehouse->price = $request->gpt_response->price;
-        $warehouse->save();
-
-    } catch (\Exception $e) {
-        Log::warning($e);
-    }
+    // try {
+    //     Log::alert(gettype($request->gpt_response));
+    //     Log::alert($request->gpt_response);
+    //     if (gettype($request->gpt_response) == 'string') {
+    //         Log::warning(json_decode( json_encode(str_replace(' ', '', $request->gpt_response)), true));
+    //         // $json_response = json_decode( json_encode($request->gpt_response), true);
+    //         // $warehouse = new Warehouse();
+    //         // $warehouse->origin = $json_response->origin;
+    //         // $warehouse->destination = $json_response->destination;
+    //         // $warehouse->fleet = $json_response->fleet;
+    //         // $warehouse->price = $json_response->price;
+    //         // // $warehouse->price = $request->gpt_response->;
+    //         // $warehouse->save();
+    //     }else{
+    //         $warehouse = new Warehouse();
+    //         $warehouse->origin = $request->gpt_response->origin;
+    //         $warehouse->destination = $request->gpt_response->destination;
+    //         $warehouse->fleet = $request->gpt_response->fleet;
+    //         $warehouse->price = $request->gpt_response->price;
+    //         // $warehouse->price = $request->gpt_response->;
+    //         $warehouse->save();
+    //     }
+    // } catch (\Exception $e) {
+    //     Log::warning($e);
+    // }
     // $warehouse->mobile_number = $request->gpt_response->phone number;
     // Log::warning($request);
     // try {
