@@ -28,6 +28,7 @@ use App\Models\Customer;
 use App\Models\Dictionary;
 use App\Models\Driver;
 use App\Models\Load;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -662,6 +663,19 @@ Route::get('DidarCallBack', function () {
 });
 
 Route::post('botData', function (Request $request) {
+    try {
+        Log::alert($request->gpt_response);
+        // $warehouse = new Warehouse();
+        // $warehouse->origin = $request->gpt_response->origin;
+        // $warehouse->destination = $request->gpt_response->destination;
+        // $warehouse->fleet = $request->gpt_response->fleet;
+        // $warehouse->price = $request->gpt_response->price;
+        // $warehouse->save();
+
+    } catch (\Exception $e) {
+        Log::warning($e);
+    }
+    // $warehouse->mobile_number = $request->gpt_response->phone number;
     // Log::warning($request);
     // try {
     //     $data = convertFaNumberToEn($request->data);
