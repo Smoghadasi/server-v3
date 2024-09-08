@@ -664,13 +664,13 @@ Route::get('DidarCallBack', function () {
 
 Route::post('botData', function (Request $request) {
     try {
-        Log::alert($request->gpt_response);
-        // $warehouse = new Warehouse();
-        // $warehouse->origin = $request->gpt_response->origin;
-        // $warehouse->destination = $request->gpt_response->destination;
-        // $warehouse->fleet = $request->gpt_response->fleet;
-        // $warehouse->price = $request->gpt_response->price;
-        // $warehouse->save();
+        // Log::alert($request->gpt_response);
+        $warehouse = new Warehouse();
+        $warehouse->origin = $request->gpt_response->origin;
+        $warehouse->destination = $request->gpt_response->destination;
+        $warehouse->fleet = $request->gpt_response->fleet;
+        $warehouse->price = $request->gpt_response->price;
+        $warehouse->save();
 
     } catch (\Exception $e) {
         Log::warning($e);
