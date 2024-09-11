@@ -238,6 +238,7 @@ class DataConvertController extends Controller
     {
         $prefixFreightConditions = array('صافی', 'صاف', 'هرتن', 'کرایه', 'قیمت');
         $postfixFreightConditions = array('صافی', 'صاف', 'هرتن', 'کرایه', 'م', 'میلیون');
+
         $dataConvert = new DataConvertController();
         $originalText = $request->data;
         $fleetsList = $dataConvert->getFleetsList();
@@ -247,6 +248,7 @@ class DataConvertController extends Controller
         $originWords = $dataConvert->getOriginWords();
         $equivalentWords = $dataConvert->getEquivalentWords();
         $cleanedText = $dataConvert->getCleanedText($request->data, $fleetsList, $citiesList, $equivalentWords, $originWords, $extraWords, $prefixFreightConditions, $postfixFreightConditions, $provincesList);
+
         $cargoList = [];
         $currentOrigin = -1;
         $originPrefixWord = false;
@@ -261,6 +263,62 @@ class DataConvertController extends Controller
 
         $phoneNumbers = [];
         $phoneNumber = '';
+
+        foreach ($cleanedText as $key => $item) {
+
+            if (preg_match("/^[0]{1}\d{10}$/", $item))
+                $phoneNumbers[] = [
+                    'phoneNumber' => $item,
+                    'key' => $key
+                ];
+
+            if (in_array($item, $fleetsList)) {
+                if (isset($cleanedText[$key - 1]))
+                    if ($cleanedText[$key - 1] == '[_]')
+                        $fleets = [];
+                $fleets[$item] = $item;
+            }
+
+            if (in_array($item, $citiesList) == true && strlen($firstCity) == 0)
+                $firstCity = $item;
+
+            if ($originPostfixWord && strlen($cityName) && $isOrigin) {
+                $origins[] = $cityName;
+                $currentOrigin = $key;
+                $destinations = [];
+                //                $cargoList[$currentOrigin]['originName'] = $cityName;
+                $originName = $cityName;
+                $cityName = '';
+            }
+
+            if (in_array($item, $citiesList) == true) {
+                $cityName = $item;
+                $origin = str_replace('_', ' ', str_replace('[', '', str_replace(']', '', $cityName)));
+                $provinceName = ProvinceCity::where('name', $origin)->where('parent_id', '!=', 0)->get();
+            }
+
+            if ($originPrefixWord && strlen($cityName) && $isOrigin) {
+                $currentOrigin = $key;
+                //                $cargoList[$currentOrigin]['originName'] = $cityName;
+                $originName = $cityName;
+                $originProvince = $provinceName;
+                $origins[] = $cityName;
+                $destinations = [];
+                $cityName = '';
+            }
+
+
+
+            $cargoPhoneNumber = '';
+            foreach ($phoneNumbers as $phoneNumberItem)
+                if ($key < $phoneNumberItem['key']) {
+                    $cargoPhoneNumber = $phoneNumberItem['phoneNumber'];
+                    break;
+                }
+
+            if ($cargoPhoneNumber == '')
+                $cargoPhoneNumber = $phoneNumber;
+        }
         $request['gpt_response'] = str_replace(array('```json', '```'), '', trim($request['gpt_response']));
 
         $responseArray = json_decode($request['gpt_response'], true);
