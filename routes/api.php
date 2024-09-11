@@ -660,20 +660,20 @@ Route::get('DidarCallBack', function () {
 });
 
 Route::post('botData', function (Request $request) {
-    Log::alert($request);
+    // Log::alert($request);
 
-    $searchString = "{";
-    $warehouseListCount = Warehouse::where([
-        ['json', $request->gpt_response],
-        ['created_at', '>', date('Y-m-d h:i:s', strtotime('-180 minute', time()))]
-    ])->count();
-    $data = convertFaNumberToEn($request->data);
-    preg_match('/09\d{2}/', $data, $matches);
-    if ($warehouseListCount == 0 && isset($matches[0])) {
-        if (strpos($request->gpt_response, $searchString) !== false) {
-            DataConvertController::warehouseStore($request);
-        }
-    }
+    // $searchString = "{";
+    // $warehouseListCount = Warehouse::where([
+    //     ['json', $request->gpt_response],
+    //     ['created_at', '>', date('Y-m-d h:i:s', strtotime('-180 minute', time()))]
+    // ])->count();
+    // $data = convertFaNumberToEn($request->data);
+    // preg_match('/09\d{2}/', $data, $matches);
+    // if ($warehouseListCount == 0 && isset($matches[0])) {
+    //     if (strpos($request->gpt_response, $searchString) !== false) {
+    //         DataConvertController::warehouseStore($request);
+    //     }
+    // }
 });
 
 
