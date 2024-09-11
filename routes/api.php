@@ -12,6 +12,7 @@ use App\Http\Controllers\BearingController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DataConvertController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\FleetController;
 use App\Http\Controllers\LoadController;
@@ -21,6 +22,7 @@ use App\Models\CargoConvertList;
 use App\Http\Controllers\PayController;
 use App\Http\Controllers\SOSController;
 use App\Http\Controllers\TenderController;
+use App\Http\Controllers\WarehouseController;
 use App\Models\AppVersion;
 use App\Models\Bearing;
 // use App\Models\ClearText;
@@ -424,7 +426,6 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
 
         // درخواست اطلاعات مشتری
         Route::get('requestCustomerInfo/{customer}', [CustomerController::class, 'requestCustomerInfo']);
-
     });
 
     Route::group(['prefix' => 'transportationCompany'], function () {
@@ -541,8 +542,6 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
         Route::patch('saveMyFireBaseToken', [DriverController::class, 'saveMyFireBaseToken']);
 
         Route::post('changeNotificationFunction', [NotificationController::class, 'changeNotificationFunction']);
-
-
     });
 
     // وب سرویس های عمومی
@@ -646,14 +645,12 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
 
         // درخواست نوتیفیکیشن صاحبان بار
         Route::post('sendCustomNotificationOwner', [NotificationController::class, 'sendCustomNotificationOwner']);
-
     });
 });
 
 
 // کال بک بیمه
-Route::post('InsuranceCallBack', function (Request $request) {
-});
+Route::post('InsuranceCallBack', function (Request $request) {});
 
 // کال بک احراز هویت کدملی
 Route::get('DidarCallBack', function () {
@@ -663,54 +660,20 @@ Route::get('DidarCallBack', function () {
 });
 
 Route::post('botData', function (Request $request) {
-    // try {
-    //     Log::alert(gettype($request->gpt_response));
-    //     Log::alert($request->gpt_response);
-    //     if (gettype($request->gpt_response) == 'string') {
-    //         Log::warning(json_decode( json_encode(str_replace(' ', '', $request->gpt_response)), true));
-    //         // $json_response = json_decode( json_encode($request->gpt_response), true);
-    //         // $warehouse = new Warehouse();
-    //         // $warehouse->origin = $json_response->origin;
-    //         // $warehouse->destination = $json_response->destination;
-    //         // $warehouse->fleet = $json_response->fleet;
-    //         // $warehouse->price = $json_response->price;
-    //         // // $warehouse->price = $request->gpt_response->;
-    //         // $warehouse->save();
-    //     }else{
-    //         $warehouse = new Warehouse();
-    //         $warehouse->origin = $request->gpt_response->origin;
-    //         $warehouse->destination = $request->gpt_response->destination;
-    //         $warehouse->fleet = $request->gpt_response->fleet;
-    //         $warehouse->price = $request->gpt_response->price;
-    //         // $warehouse->price = $request->gpt_response->;
-    //         $warehouse->save();
-    //     }
-    // } catch (\Exception $e) {
-    //     Log::warning($e);
-    // }
-    // $warehouse->mobile_number = $request->gpt_response->phone number;
-    // Log::warning($request);
-    // try {
-    //     $data = convertFaNumberToEn($request->data);
-    //     preg_match('/09\d{2}/', $data, $matches);
+    Log::alert($request);
 
-    //     $cargoConvertListCount = CargoConvertList::where([
-    //         ['cargo', $data],
-    //         ['created_at', '>', date('Y-m-d h:i:s', strtotime('-180 minute', time()))]
-    //     ])->count();
-    //     if ($cargoConvertListCount == 0 && isset($matches[0])) {
-    //         $cargoConvertList = new CargoConvertList();
-    //         $cargoConvertList->cargo = $data;
-    //         $cargoConvertList->save();
-    //     }
-    //     return 'OK';
-    // } catch (Exception $exception) {
-    //     \Illuminate\Support\Facades\Log::emergency("------------------- botData ERROR ---------------------");
-    //     \Illuminate\Support\Facades\Log::emergency($exception->getMessage());
-    //     \Illuminate\Support\Facades\Log::emergency("------------------- End botData ERROR ---------------------");
-    // }
-
-    // return 'ERROR';
+    $searchString = "{";
+    $warehouseListCount = Warehouse::where([
+        ['json', $request->gpt_response],
+        ['created_at', '>', date('Y-m-d h:i:s', strtotime('-180 minute', time()))]
+    ])->count();
+    $data = convertFaNumberToEn($request->data);
+    preg_match('/09\d{2}/', $data, $matches);
+    if ($warehouseListCount == 0 && isset($matches[0])) {
+        if (strpos($request->gpt_response, $searchString) !== false) {
+            DataConvertController::warehouseStore($request);
+        }
+    }
 });
 
 

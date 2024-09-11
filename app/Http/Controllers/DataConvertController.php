@@ -27,6 +27,7 @@ use App\Models\Tender;
 // use App\Models\Transaction;
 use App\Models\User;
 use App\Models\UserActivityReport;
+use App\Models\Warehouse;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
@@ -214,10 +215,66 @@ class DataConvertController extends Controller
     private function getExtraWords()
     {
         return [
-            '[از]', '[به]', '[صافی]', '[صاف]',
-            '[هرتن]', '[به_ازای_هرتن]', '[به_ازاء_هرتن]', '[هر_تن]', '[به_ازای_هر_تن]',
-            '[به_ازاء_هر_تن]', '[کرایه]', '[قیمت]', '[م]', '[میلیون]', '[تومن]', '[تن]',
+            '[از]',
+            '[به]',
+            '[صافی]',
+            '[صاف]',
+            '[هرتن]',
+            '[به_ازای_هرتن]',
+            '[به_ازاء_هرتن]',
+            '[هر_تن]',
+            '[به_ازای_هر_تن]',
+            '[به_ازاء_هر_تن]',
+            '[کرایه]',
+            '[قیمت]',
+            '[م]',
+            '[میلیون]',
+            '[تومن]',
+            '[تن]',
         ];
+    }
+
+    public static function warehouseStore($request)
+    {
+        $prefixFreightConditions = array('صافی', 'صاف', 'هرتن', 'کرایه', 'قیمت');
+        $postfixFreightConditions = array('صافی', 'صاف', 'هرتن', 'کرایه', 'م', 'میلیون');
+        $dataConvert = new DataConvertController();
+        $originalText = $request->data;
+        $fleetsList = $dataConvert->getFleetsList();
+        $citiesList = $dataConvert->getCitiesList();
+        $provincesList = $dataConvert->getProvincesList();
+        $extraWords = $dataConvert->getExtraWords();
+        $originWords = $dataConvert->getOriginWords();
+        $equivalentWords = $dataConvert->getEquivalentWords();
+        $cleanedText = $dataConvert->getCleanedText($request->data, $fleetsList, $citiesList, $equivalentWords, $originWords, $extraWords, $prefixFreightConditions, $postfixFreightConditions, $provincesList);
+        $cargoList = [];
+        $currentOrigin = -1;
+        $originPrefixWord = false;
+        $originPostfixWord = false;
+        $cityName = '';
+        $isOrigin = false;
+
+        $firstCity = ''; // اگر هیچ مبدا پیدا نشده اولی شهر مبدا است
+        $origins = [];
+        $destinations = [];
+        $fleets = [];
+
+        $phoneNumbers = [];
+        $phoneNumber = '';
+        $request['gpt_response'] = str_replace(array('```json', '```'), '', trim($request['gpt_response']));
+
+        $responseArray = json_decode($request['gpt_response'], true);
+
+        $warehouse = new Warehouse();
+        $warehouse->origin = $responseArray['origin'] ?? null;
+        $warehouse->destination = $responseArray['destination'] ?? null;
+        $warehouse->cargo = $responseArray['cargo'] ?? null;
+        $warehouse->fleet = $responseArray['fleet'] ?? null;
+        $warehouse->price = $responseArray['price'] ?? null;
+        $warehouse->mobile_number = $responseArray['phone_number'] ?? null;
+        $warehouse->json = $request->gpt_response;
+        $warehouse->data = $request->data;
+        $warehouse->save();
     }
 
     public function dataConvert($cargo)
