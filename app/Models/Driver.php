@@ -235,7 +235,7 @@ class Driver extends Authenticatable
 
     public function getFreeCallsDriverAttribute()
     {
-        if ($this->activeDate < date("Y-m-d H:i:s", time() || $this->activeDate == null))
+        if ($this->activeDate < date("Y-m-d H:i:s", time()) || $this->activeDate == null)
             return $this->freeCalls;
         else
             return false;
