@@ -18,7 +18,8 @@ class Driver extends Authenticatable
         'operatorMessage',
         'blockedIp',
         'transactionCount',
-        'ratingDriver'
+        'ratingDriver',
+        'freeCallsDriver',
     ];
     public function city()
     {
@@ -230,6 +231,14 @@ class Driver extends Authenticatable
         }else{
             return round($score,1);
         }
+    }
+
+    public function getFreeCallsDriverAttribute()
+    {
+        if ($this->activeDate < date("Y-m-d H:i:s", time() || $this->activeDate == null))
+            return $this->freeCalls;
+        else
+            return false;
     }
     //
     public function subscriptionLoadSmsIr($mobile, $driver, $from, $to)
