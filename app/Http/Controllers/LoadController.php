@@ -2587,6 +2587,7 @@ class LoadController extends Controller
                     'loads' => $loads,
                     'transactionCount' => $driver->transactionCount,
                     'Tel' => $setting->tel,
+                    'freeCalls' => $driver->freeCalls,
                 ];
         } catch (\Exception $exception) {
             Log::emergency("******************************** requestNewLoadsForDriversV2 ******************************");

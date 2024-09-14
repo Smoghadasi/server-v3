@@ -73,9 +73,9 @@ class Load extends Model
 
     public function getFreeCallAttribute()
     {
-        if (FleetLoad::where('load_id', $this->id)->where('fleet_id', '!=', 82)->where('userType', 'owner')->count() > 0)
-            return true;
-        else
+        // if (FleetLoad::where('load_id', $this->id)->where('fleet_id', '!=', 82)->where('userType', 'owner')->count() > 0)
+        //     return true;
+        // else
             return false;
     }
 
