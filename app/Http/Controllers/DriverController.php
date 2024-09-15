@@ -588,6 +588,16 @@ class DriverController extends Controller
         $driver->FCM_token = $request->token;
         $driver->version = 68;
         $driver->save();
+        try {
+            DriverActivity::firstOrCreate([
+                'driver_id' => $driver->id,
+                'persianDate' => DateController::createPersianDate()
+            ]);
+        } catch (\Exception $exception) {
+            Log::emergency("**************************************************************");
+            Log::emergency($exception->getMessage());
+            Log::emergency("**************************************************************");
+        }
         return ['result' => SUCCESS];
     }
 
