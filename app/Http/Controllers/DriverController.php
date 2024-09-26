@@ -901,12 +901,29 @@ class DriverController extends Controller
 
             if ($driver->activeDate > date("Y-m-d H:i:s", time()) || $driver->freeCalls > 0) {
                 return $this->checkCreditDriver($driver, $load_id, $phoneNumber, true);
-            } elseif (FleetLoad::where('load_id', $load_id)->where('fleet_id', '!=', 82)->whereHas('cargo', function ($q) {
+            }
+
+            $fleetLoads = FleetLoad::where('load_id', $load_id)->where('fleet_id', '!=', 82)->whereHas('cargo', function ($q) {
                 $q->where('userType', 'owner');
                 $q->where('isBot', 0);
-            })->exists()) {
-                return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
+            })->get();
+
+
+            if ($fleetLoads) {
+                foreach ($fleetLoads as $fleetLoad) {
+                    if ($fleetLoad->fleet_id == $driver->fleet_id) {
+                        return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
+                    }
+                }
             }
+
+
+            // elseif (FleetLoad::where('load_id', $load_id)->where('fleet_id', '!=', 82)->whereHas('cargo', function ($q) {
+            //     $q->where('userType', 'owner');
+            //     $q->where('isBot', 0);
+            // })->exists()) {
+            //     return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
+            // }
         } catch (Exception $exception) {
             Log::emergency($exception->getMessage());
         }

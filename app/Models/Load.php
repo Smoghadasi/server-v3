@@ -5,6 +5,7 @@ namespace App\Models;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class Load extends Model
 {
@@ -73,10 +74,20 @@ class Load extends Model
 
     public function getFreeCallAttribute()
     {
-        // if (FleetLoad::where('load_id', $this->id)->where('fleet_id', '!=', 82)->where('userType', 'owner')->count() > 0)
-        //     return true;
-        // else
-            return false;
+        $fleetLoads = FleetLoad::where('load_id', $this->id)->where('fleet_id', '!=', 82)->whereHas('cargo', function ($q) {
+            $q->where('userType', 'owner');
+            $q->where('isBot', 0);
+        })->get();
+
+
+        if ($fleetLoads) {
+            foreach ($fleetLoads as $fleetLoad) {
+                if ($fleetLoad->fleet_id == Auth::user()->fleet_id) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 
