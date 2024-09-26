@@ -82,6 +82,9 @@ class Load extends Model
 
         if ($fleetLoads) {
             foreach ($fleetLoads as $fleetLoad) {
+                if ($fleetLoad->fleet_id == 82) {
+                    return false;
+                }
                 if ($fleetLoad->fleet_id == Auth::user()->fleet_id) {
                     return true;
                 }

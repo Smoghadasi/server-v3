@@ -911,6 +911,9 @@ class DriverController extends Controller
 
             if ($fleetLoads) {
                 foreach ($fleetLoads as $fleetLoad) {
+                    if ($fleetLoad->fleet_id == 82) {
+                        return false;
+                    }
                     if ($fleetLoad->fleet_id == $driver->fleet_id) {
                         return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
                     }
