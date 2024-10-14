@@ -1011,7 +1011,7 @@ class LoadController extends Controller
 
         try {
             $fleet = FleetLoad::where('load_id', $load->id)->first();
-            $cityFrom = ProvinceCity::where('id', $load->origin_city_id)->first();
+            $cityFrom = ProvinceCity::findOrFail($load->origin_city_id);
             $cityTo = ProvinceCity::where('id', $load->destination_city_id)->first();
 
             $driverFCM_tokens = Driver::whereNotNull('FCM_token')
@@ -2573,11 +2573,10 @@ class LoadController extends Controller
                     'destination_city_id',
                     'userType',
                 )
+                ->orderByDesc('urgent')
+                ->orderByDesc('created_at')
                 ->skip(0)
                 ->take($page)
-
-                ->orderBy('urgent', 'desc')
-                ->orderBy('id', 'desc')
                 ->get();
             $setting = Setting::first();
 

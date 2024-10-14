@@ -912,7 +912,7 @@ class DriverController extends Controller
             if ($fleetLoads) {
                 foreach ($fleetLoads as $fleetLoad) {
                     if ($fleetLoad->fleet_id == 82) {
-                        return false;
+                        return ['result' => false];
                     }
                     if ($fleetLoad->fleet_id == $driver->fleet_id) {
                         return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
@@ -1600,12 +1600,12 @@ class DriverController extends Controller
     {
         $driver = Driver::findOrFail(Auth::id());
         try {
-
             $driver->latitude = $request->latitude;
             $driver->longitude = $request->longitude;
             $city = ProvinceCity::where('parent_id', '!=', 0)->where('name', $request->city)->first();
             $driver->province_id = $city->parent_id;
             $driver->city_id = $city->id;
+            $driver->location_at = now();
             $driver->save();
             return response()->json('اطلاعات جدید ذخیره شد', 200);
         } catch (Exception $exception) {
