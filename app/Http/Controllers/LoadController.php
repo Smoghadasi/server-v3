@@ -1865,12 +1865,18 @@ class LoadController extends Controller
                     ->select(['id', 'name', 'lastName', 'mobileNumber', 'isAccepted'])
                     ->first();
             }
+            $location_date = Driver::where('location_at', '>', date('Y-m-d', time()) . ' 00:00:00')
+                ->where('id', Auth::id())
+                ->select('id', 'location_at')
+                ->first();
+
             return [
                 'result' => SUCCESS,
                 'loadInfo' => $loadInfo,
                 'path' => $path,
                 'owner' => $owner,
-                'result' => $result
+                'result' => $result,
+                'location_date' => $location_date ? true : false
             ];
         } catch (\Exception $exception) {
             return response()->json('بار مورد نظر یافت نشد', 404);
