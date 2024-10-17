@@ -9,7 +9,7 @@ class ContactUs extends Model
 {
     protected $table = 'contact_uses';
 
-    protected $appends = ['nameAndLastName', 'fleetName', 'messageDateAndTime', 'userId'];
+    protected $appends = ['nameAndLastName', 'fleetName', 'messageDateAndTime', 'userId', 'shamsiUpdatedDate'];
 
     public function getNameAndLastNameAttribute()
     {
@@ -20,6 +20,15 @@ class ContactUs extends Model
         }
 
         return "بدون نام";
+    }
+
+    public function getShamsiUpdatedDateAttribute()
+    {
+        try {
+            $date = explode(' ', $this->updated_at);
+            return str_replace('-', '/', gregorianDateToPersian($date[0], '-')) . ' ' . $date[1];
+        } catch (\Exception $exception) {
+        }
     }
 
     public function getFleetNameAttribute()
