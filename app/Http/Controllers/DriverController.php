@@ -866,13 +866,19 @@ class DriverController extends Controller
             if ($load === null) {
                 return ['result' => 2];
             }
-            // $loadFleet = DriverFleet::where('load_id', $load_id)->where('fleet_id', $driver->fleet_id)->first();
-            // if ($loadFleet) {
-            //     $fleetIds = [43, 48, 49, 50, 51, 52, 53, 55, 56, 57, 58, 59, 60, 61, 66, 74, 78, 79];
-            //     if (in_array($driver->fleet_id, $fleetIds)) {
-            //         return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
-            //     }
-            // }
+
+            try {
+                $fleetLoad = FleetLoad::where('fleet_id', $driver->fleet_id)->where('load_id', $load_id)->first();
+                if ($fleetLoad) {
+                    $fleetIds = [43, 48, 49, 50, 51, 52, 53, 55, 56, 57, 58, 59, 60, 61, 66, 74, 78, 79];
+                    if (in_array($driver->fleet_id, $fleetIds)) {
+                        return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning($e->getMessage());
+            }
+
             // if (
             //     $driver->fleet_id == 48 ||
             //     $driver->fleet_id == 50 ||
@@ -947,9 +953,6 @@ class DriverController extends Controller
         }
         if ($checkFreeCall == true) {
             if ($driver->activeDate < date("Y-m-d H:i:s", time())) {
-                // $driverFleet = DriverFleet::where('fleet_id', $driver->fleet_id)->where('driver_id', $driver->id)->first();
-                // $driverFleet->freeCall--;
-                // $driverFleet->save();
                 $driver->freeCalls--;
                 $driver->save();
             }
@@ -966,6 +969,7 @@ class DriverController extends Controller
             $driverCallCount->created_date = $driver->created_at;
             $driverCallCount->save();
         } else {
+
             $driverCallCount = new DriverCallCount();
             $driverCallCount->persian_date = $persian_date;
             $driverCallCount->calls = 1;
@@ -976,7 +980,6 @@ class DriverController extends Controller
 
         // فعالیت رانندگان بر اساس تماس
         if (DriverCall::where('created_at', '>', date("Y-m-d", time()) . " 00:00:00")->where('driver_id', $driver->id)->count() == 0) {
-
             // گزارش رانندگان بر اساس ناوگان
             $driverCallReport = DriverCallReport::where('fleet_id', $driver->fleet_id)
                 ->where('persian_date', $persian_date)
