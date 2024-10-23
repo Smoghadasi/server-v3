@@ -860,13 +860,19 @@ class DriverController extends Controller
     public function checkDriverStatusForCalling($phoneNumber = '0', $load_id = 0, $latitude = 0, $longitude = 0)
     {
         try {
-            $load = Load::where('id', '=', $load_id)->first();
+            $load = Load::findOrFail($load_id);
             $driver = Driver::findOrFail(Auth::id());
 
             if ($load === null) {
                 return ['result' => 2];
             }
-            // $checkDriverFleet = DriverFleet::where('fleet_id', $driver->fleet_id)->where('driver_id', $driver->id)->first();
+            $loadFleet = DriverFleet::where('load_id', $load_id)->where('fleet_id', $driver->fleet_id)->first();
+            if ($loadFleet) {
+                $fleetIds = [43, 48, 49, 50, 51, 52, 53, 55, 56, 57, 58, 59, 60, 61, 66, 74, 78, 79];
+                if (in_array($driver->fleet_id, $fleetIds)) {
+                    return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
+                }
+            }
             // if (
             //     $driver->fleet_id == 48 ||
             //     $driver->fleet_id == 50 ||
