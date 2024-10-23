@@ -866,13 +866,13 @@ class DriverController extends Controller
             if ($load === null) {
                 return ['result' => 2];
             }
-            $loadFleet = DriverFleet::where('load_id', $load_id)->where('fleet_id', $driver->fleet_id)->first();
-            if ($loadFleet) {
-                $fleetIds = [43, 48, 49, 50, 51, 52, 53, 55, 56, 57, 58, 59, 60, 61, 66, 74, 78, 79];
-                if (in_array($driver->fleet_id, $fleetIds)) {
-                    return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
-                }
-            }
+            // $loadFleet = DriverFleet::where('load_id', $load_id)->where('fleet_id', $driver->fleet_id)->first();
+            // if ($loadFleet) {
+            //     $fleetIds = [43, 48, 49, 50, 51, 52, 53, 55, 56, 57, 58, 59, 60, 61, 66, 74, 78, 79];
+            //     if (in_array($driver->fleet_id, $fleetIds)) {
+            //         return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
+            //     }
+            // }
             // if (
             //     $driver->fleet_id == 48 ||
             //     $driver->fleet_id == 50 ||
