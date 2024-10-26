@@ -15,7 +15,7 @@ class RadioController extends Controller
      */
     public function index()
     {
-        $radios = Radio::paginate(20);
+        $radios = Radio::orderByDesc('created_at')->paginate(20);
         return view('admin.radio.index', compact('radios'));
     }
 
