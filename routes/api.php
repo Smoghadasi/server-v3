@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ProvinceCityController;
 use App\Http\Controllers\Api\RadioController;
 use App\Http\Controllers\Api\ReportController as ApiReportController;
 use App\Http\Controllers\Api\SliderController;
+use App\Http\Controllers\Api\SupportCallController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\BearingController;
@@ -466,6 +467,8 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
 
         Route::get('radio', [RadioController::class, 'index']);
 
+        Route::post('support', [SupportCallController::class, 'storeDriver']);
+
         // امتیاز
         Route::post('score', [LoadController::class, 'score']);
 
@@ -664,15 +667,25 @@ Route::post('botData', function (Request $request) {
 
     // $searchString = "{";
     // $warehouseListCount = Warehouse::where([
-    //     ['json', $request->gpt_response],
+    //     ['json', $request->phones],
     //     ['created_at', '>', date('Y-m-d h:i:s', strtotime('-180 minute', time()))]
     // ])->count();
-    // $data = convertFaNumberToEn($request->data);
+    // $data = convertFaNumberToEn($request->phones);
     // preg_match('/09\d{2}/', $data, $matches);
     // if ($warehouseListCount == 0 && isset($matches[0])) {
-    //     if (strpos($request->gpt_response, $searchString) !== false) {
-    //         DataConvertController::warehouseStore($request);
-    //     }
+    //     $warehouse = new Warehouse();
+    //     $warehouse->origin = $request->sources ?? null;
+    //     $warehouse->destination =  $request->destinations ?? null;
+    //     $warehouse->cargo = null;
+    //     $warehouse->fleet = $request->cars ?? null;
+    //     $warehouse->price = null;
+    //     $warehouse->mobile_number = $request->phones ?? null;
+    //     $warehouse->json = null;
+    //     $warehouse->data = $request->original_text;
+    //     $warehouse->save();
+
+    // //         // DataConvertController::warehouseStore($request);
+
     // }
 });
 
