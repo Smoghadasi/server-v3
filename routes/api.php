@@ -467,7 +467,7 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
 
         Route::get('radio', [RadioController::class, 'index']);
 
-        Route::post('support', [SupportCallController::class, 'storeDriver']);
+        Route::get('support', [SupportCallController::class, 'storeDriver']);
 
         // امتیاز
         Route::post('score', [LoadController::class, 'score']);
