@@ -74,22 +74,18 @@ class Load extends Model
 
     public function getFreeCallAttribute()
     {
-        // $fleetLoads = FleetLoad::where('load_id', $this->id)->where('fleet_id', '!=', 82)->whereHas('cargo', function ($q) {
-        //     $q->where('userType', 'owner');
-        //     $q->where('isBot', 0);
-        // })->get();
 
 
-        // if ($fleetLoads) {
-        //     foreach ($fleetLoads as $fleetLoad) {
-        //         if ($fleetLoad->fleet_id == 82) {
-        //             return false;
-        //         }
-        //         if ($fleetLoad->fleet_id == Auth::user()->fleet_id) {
-        //             return true;
-        //         }
-        //     }
-        // }
+        $fleetLoad = FleetLoad::where('load_id', $this->id)->where('fleet_id', Auth::user()->fleet_id)->where('fleet_id', '!=', 82)->whereHas('cargo', function ($q) {
+            $q->where('userType', 'owner');
+            $q->where('isBot', 0);
+        })->first();
+        if ($fleetLoad) {
+            $fleetIds = [45, 46, 47, 48, 86];
+            if (in_array(Auth::user()->fleet_id, $fleetIds)) {
+                return true;
+            }
+        }
         return false;
     }
 
