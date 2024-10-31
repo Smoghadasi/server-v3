@@ -23,6 +23,6 @@ class HistorySearchDriver extends Model
 
     public function toCity(): BelongsTo
     {
-        return $this->belongsTo(Driver::class, 'to_city_id');
+        return $this->belongsTo(ProvinceCity::class, 'to_city_id');
     }
 }
