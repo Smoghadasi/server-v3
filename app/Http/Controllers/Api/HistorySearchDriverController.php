@@ -29,7 +29,7 @@ class HistorySearchDriverController extends Controller
             $historySearchDriver = HistorySearchDriver::where([
                 ['from_city_id', $request->from_city_id],
                 ['to_city_id', $request->to_city_id],
-                ['driver_id', $request->driver_id],
+                ['driver_id', Auth::id()],
             ])->first();
 
             if ($historySearchDriver) {
@@ -41,7 +41,7 @@ class HistorySearchDriverController extends Controller
                 $historySearchDriverOldCount = HistorySearchDriver::where([
                     ['from_city_id', $request->from_city_id],
                     ['to_city_id', $request->to_city_id],
-                    ['driver_id', $request->driver_id],
+                    ['driver_id', Auth::id()],
                 ])->count();
 
                 // Delete the oldest entry if the count is 5 or more
@@ -49,7 +49,7 @@ class HistorySearchDriverController extends Controller
                     HistorySearchDriver::where([
                         ['from_city_id', $request->from_city_id],
                         ['to_city_id', $request->to_city_id],
-                        ['driver_id', $request->driver_id],
+                        ['driver_id', Auth::id()],
                     ])
                         ->orderBy('created_at', 'asc')
                         ->first()
