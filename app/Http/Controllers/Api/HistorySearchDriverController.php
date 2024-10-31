@@ -13,7 +13,8 @@ class HistorySearchDriverController extends Controller
 {
     public function index()
     {
-        $historySearchDrivers = HistorySearchDriver::where('driver_id', Auth::id())
+        $historySearchDrivers = HistorySearchDriver::with('fromCity', 'toCity')
+            ->where('driver_id', Auth::id())
             ->orderByDesc('count')
             ->orderByDesc('created_at')
             ->take(5)
@@ -50,9 +51,9 @@ class HistorySearchDriverController extends Controller
                         ['to_city_id', $request->to_city_id],
                         ['driver_id', $request->driver_id],
                     ])
-                    ->orderBy('created_at', 'asc')
-                    ->first()
-                    ->delete();
+                        ->orderBy('created_at', 'asc')
+                        ->first()
+                        ->delete();
                 }
 
                 // Create a new entry
@@ -67,6 +68,5 @@ class HistorySearchDriverController extends Controller
         } catch (\Exception $e) {
             Log::emergency($e->getMessage());
         }
-
     }
 }
