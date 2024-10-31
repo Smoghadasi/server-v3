@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\Api\HistorySearchDriverController;
 use App\Http\Controllers\Api\OwnerController;
 use App\Http\Controllers\Api\ProvinceCityController;
 use App\Http\Controllers\Api\RadioController;
@@ -471,6 +472,10 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
 
         // امتیاز
         Route::post('score', [LoadController::class, 'score']);
+
+        Route::get('historySearchDriver', [HistorySearchDriverController::class, 'index']);
+
+        Route::post('historySearchDriver', [HistorySearchDriverController::class, 'store']);
 
         // ثبت قیمت جدید در استعلام بار
         Route::post('storeInquiryToLoad', [LoadController::class, 'storeInquiryToLoad']);
