@@ -1375,6 +1375,7 @@ class DriverController extends Controller
 
         return response()->json([
             'result' => true,
+            'freeCalls' => $driver->freeCallsDriver,
             'data' => [
                 'id' => $driver->id,
                 'name' => $driver->name,
