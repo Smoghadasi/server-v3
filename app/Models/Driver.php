@@ -238,7 +238,7 @@ class Driver extends Authenticatable
 
         $fleetIds = [43, 48, 49, 50, 51, 52, 53, 55, 56, 57, 58, 59, 60, 61, 66, 74, 78, 79];
         if (in_array($this->fleet_id, $fleetIds)) {
-            return '100';
+            return true;
         }
 
         if ($this->activeDate < date("Y-m-d H:i:s", time()) || $this->activeDate == null)
