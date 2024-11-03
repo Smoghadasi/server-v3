@@ -228,13 +228,19 @@ class Driver extends Authenticatable
         return $score = Score::where('type', 'Owner')->where('driver_id', $this->id)->avg('value');
         if ($score === null) {
             return null;
-        }else{
-            return round($score,1);
+        } else {
+            return round($score, 1);
         }
     }
 
     public function getFreeCallsDriverAttribute()
     {
+
+        $fleetIds = [43, 48, 49, 50, 51, 52, 53, 55, 56, 57, 58, 59, 60, 61, 66, 74, 78, 79];
+        if (in_array($this->fleet_id, $fleetIds)) {
+            return true;
+        }
+
         if ($this->activeDate < date("Y-m-d H:i:s", time()) || $this->activeDate == null)
             return $this->freeCalls;
         else
