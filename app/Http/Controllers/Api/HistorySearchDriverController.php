@@ -27,8 +27,8 @@ class HistorySearchDriverController extends Controller
         try {
             // Fetch the history search driver
             $historySearchDriver = HistorySearchDriver::where([
-                ['from_city_id', $request->from_city_id],
-                ['to_city_id', $request->to_city_id],
+                ['from_city_id', $request->selectedLoadingCitiesIds],
+                ['to_city_id', $request->selectedDischargeCitiesIds],
                 ['driver_id', Auth::id()],
             ])->first();
 
@@ -39,16 +39,16 @@ class HistorySearchDriverController extends Controller
             } else {
                 // Count existing entries
                 $historySearchDriverOldCount = HistorySearchDriver::where([
-                    ['from_city_id', $request->from_city_id],
-                    ['to_city_id', $request->to_city_id],
+                    ['from_city_id', $request->selectedLoadingCitiesIds],
+                    ['to_city_id', $request->selectedDischargeCitiesIds],
                     ['driver_id', Auth::id()],
                 ])->count();
 
                 // Delete the oldest entry if the count is 5 or more
                 if ($historySearchDriverOldCount >= 5) {
                     HistorySearchDriver::where([
-                        ['from_city_id', $request->from_city_id],
-                        ['to_city_id', $request->to_city_id],
+                        ['from_city_id', $request->selectedLoadingCitiesIds],
+                        ['to_city_id', $request->selectedDischargeCitiesIds],
                         ['driver_id', Auth::id()],
                     ])
                         ->orderBy('created_at', 'asc')
@@ -58,8 +58,8 @@ class HistorySearchDriverController extends Controller
 
                 // Create a new entry
                 HistorySearchDriver::create([
-                    'from_city_id' => $request->from_city_id,
-                    'to_city_id' => $request->to_city_id,
+                    'from_city_id' => $request->selectedLoadingCitiesIds,
+                    'to_city_id' => $request->selectedDischargeCitiesIds,
                     'driver_id' => Auth::id(),
                 ]);
             }
