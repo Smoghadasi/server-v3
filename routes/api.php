@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\RadioController;
 use App\Http\Controllers\Api\ReportController as ApiReportController;
 use App\Http\Controllers\Api\SliderController;
 use App\Http\Controllers\Api\SupportCallController;
+use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\BearingController;
@@ -483,6 +484,9 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
 
         // درخواست لیست بارهای راننده
         Route::get('requestDriverLoadsList', [LoadController::class, 'requestDriverLoadsList']);
+
+        // تراکنش های مالی
+        Route::get('transaction', [TransactionController::class, 'index']);
 
         // بررسی ثبت درخواست حمل توسط راننده
         Route::get('checkDriverInquiry/{load_id}', [LoadController::class, 'checkDriverInquiry']);
