@@ -15,7 +15,7 @@ class TransactionController extends Controller
         $transactions = Transaction::where('userType', ROLE_DRIVER)
             ->where('user_id', Auth::id())
             ->orderByDesc('created_at')
-            ->get();
+            ->paginate(10);
         return response()->json($transactions, 200);
     }
 }
