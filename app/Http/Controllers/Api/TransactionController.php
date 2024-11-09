@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
-    public function index($status)
+    public function index($status = null)
     {
         if ($status == 0) {
             $transactions = Transaction::where('userType', ROLE_DRIVER)
@@ -22,6 +22,11 @@ class TransactionController extends Controller
             $transactions = Transaction::where('userType', ROLE_DRIVER)
                 ->where('user_id', Auth::id())
                 ->whereIn('status', ['100', '101'])
+                ->orderByDesc('created_at')
+                ->paginate(10);
+        } else if ($status == null) {
+            $transactions = Transaction::where('userType', ROLE_DRIVER)
+                ->where('user_id', Auth::id())
                 ->orderByDesc('created_at')
                 ->paginate(10);
         }
