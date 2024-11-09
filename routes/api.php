@@ -486,7 +486,7 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
         Route::get('requestDriverLoadsList', [LoadController::class, 'requestDriverLoadsList']);
 
         // تراکنش های مالی
-        Route::get('transaction/driver/{status}', [TransactionController::class, 'index']);
+        Route::get('transaction/{status}', [TransactionController::class, 'index']);
 
         // بررسی ثبت درخواست حمل توسط راننده
         Route::get('checkDriverInquiry/{load_id}', [LoadController::class, 'checkDriverInquiry']);
