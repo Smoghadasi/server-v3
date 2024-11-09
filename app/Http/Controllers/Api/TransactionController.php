@@ -12,14 +12,17 @@ class TransactionController extends Controller
 {
     public function index(Request $request)
     {
-        if ($request->status == 0) {
-            $transactions = Transaction::where('userType', ROLE_DRIVER)
-                ->where('user_id', Auth::id())
-                ->whereIn('status', ['0', null])
-                ->orderByDesc('created_at')
-                ->paginate(10);
-            return response()->json($transactions, 200);
+        if ($request->has('status')) {
+            if ($request->status == 0) {
+                $transactions = Transaction::where('userType', ROLE_DRIVER)
+                    ->where('user_id', Auth::id())
+                    ->whereIn('status', ['0', null])
+                    ->orderByDesc('created_at')
+                    ->paginate(10);
+                return response()->json($transactions, 200);
+            }
         }
+
         $transactions = Transaction::where('userType', ROLE_DRIVER)
             ->where('user_id', Auth::id())
             ->whereIn('status', ['100', '101'])
