@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\Api\BankController;
 use App\Http\Controllers\Api\HistorySearchDriverController;
 use App\Http\Controllers\Api\OwnerController;
 use App\Http\Controllers\Api\ProvinceCityController;
@@ -481,6 +482,7 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
         // ثبت قیمت جدید در استعلام بار
         Route::post('storeInquiryToLoad', [LoadController::class, 'storeInquiryToLoad']);
 
+        Route::get('bank', [BankController::class, 'index']);
 
         // درخواست لیست بارهای راننده
         Route::get('requestDriverLoadsList', [LoadController::class, 'requestDriverLoadsList']);
