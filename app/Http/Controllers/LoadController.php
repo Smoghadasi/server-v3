@@ -4050,7 +4050,8 @@ class LoadController extends Controller
                 return [
                     'result' => SUCCESS,
                     'currentTime' => time(),
-                    'loads' => $loads
+                    'loads' => $loads,
+                    'freeCalls' => $driver->freeCallsDriver,
                 ];
             }
         } catch (\Exception $exception) {
