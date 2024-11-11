@@ -4315,7 +4315,9 @@ class LoadController extends Controller
 
             return [
                 'result' => SUCCESS,
-                'loads' => $loads
+                'loads' => $loads,
+                'freeCalls' => $driver->freeCallsDriver,
+
                 // 'currentTime' => time(),
             ];
         } catch (\Exception $exception) {
