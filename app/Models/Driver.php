@@ -244,7 +244,7 @@ class Driver extends Authenticatable
         if ($this->activeDate < date("Y-m-d H:i:s", time()) || $this->activeDate == null)
             return $this->freeCalls;
         else
-            return false;
+            return 'false';
     }
     //
     public function subscriptionLoadSmsIr($mobile, $driver, $from, $to)
