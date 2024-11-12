@@ -144,4 +144,17 @@ class Transaction extends Model
         }
         return 0;
     }
+
+    public function getPaymentTypeAttribute()
+    {
+        switch ($this->payment_type) {
+            case 'cardToCard':
+                'کارت به کارت';
+                break;
+
+            default:
+                'آنلاین';
+                break;
+        }
+    }
 }
