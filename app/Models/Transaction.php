@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Transaction extends Model
 {
     protected $appends = ['userTypeTitle', 'payerName', 'payerMobileNumber','FleetDriver', 'paymentDate', 'paymentDates', 'driverFleetName', 'countOfSuccess','countOfAllTries'];
-    protected $guarded = [];
+
     public function getUserTypeTitleAttribute()
     {
         switch ($this->userType) {
@@ -145,16 +145,16 @@ class Transaction extends Model
         return 0;
     }
 
-    public function getPaymentTypeAttribute()
-    {
-        switch ($this->payment_type) {
-            case 'cardToCard':
-                'کارت به کارت';
-                break;
+    // public function getPaymentTypeAttribute()
+    // {
+    //     switch ($this->payment_type) {
+    //         case 'cardToCard':
+    //             'کارت به کارت';
+    //             break;
 
-            default:
-                'آنلاین';
-                break;
-        }
-    }
+    //         default:
+    //             'آنلاین';
+    //             break;
+    //     }
+    // }
 }
