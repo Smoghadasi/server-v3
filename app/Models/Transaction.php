@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Transaction extends Model
 {
     protected $appends = ['userTypeTitle', 'payerName', 'payerMobileNumber','FleetDriver', 'paymentDate', 'paymentDates', 'driverFleetName', 'countOfSuccess','countOfAllTries'];
-
+    protected $guarded = [];
     public function getUserTypeTitleAttribute()
     {
         switch ($this->userType) {
