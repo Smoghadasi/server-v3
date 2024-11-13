@@ -380,6 +380,10 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
         return ['wallet' => $bearing->wallet];
     });
 
+    // لیست بانک ها
+    Route::get('bank', [BankController::class, 'index']);
+
+
     /********************************************************************************************/
     // ارتباط با ما
     /********************************************************************************************/
@@ -482,7 +486,6 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
         // ثبت قیمت جدید در استعلام بار
         Route::post('storeInquiryToLoad', [LoadController::class, 'storeInquiryToLoad']);
 
-        Route::get('bank', [BankController::class, 'index']);
 
         // درخواست لیست بارهای راننده
         Route::get('requestDriverLoadsList', [LoadController::class, 'requestDriverLoadsList']);
