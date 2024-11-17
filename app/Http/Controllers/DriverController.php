@@ -1014,6 +1014,13 @@ class DriverController extends Controller
 
             $load->driverCallCounter--;
             $load->save();
+            $loadRobaris = Load::where('title', 'LIKE', '%' . 'روباری' . '%')->where('driverCallCounter', '<=', 0)->get();
+            if (count($loadRobaris) > 0) {
+                foreach ($loadRobaris as $loadRobari) {
+                    $loadRobari->delete();
+                }
+            }
+
             $fleets = json_decode($load->fleets, true);
             foreach ($fleets as $fleet) {
                 if (($fleet['fleet_id'] == 86 || $fleet['fleet_id'] == 82) && $load->driverCallCounter <= 0) {
