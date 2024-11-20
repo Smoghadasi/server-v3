@@ -10,7 +10,9 @@ class BankController extends Controller
 {
     public function index()
     {
-        $banks = Bank::where('status', 1)->get();
+        $banks = Bank::where('status', 1)
+            ->orderBy('asc', 'sort')
+            ->get();
         return response()->json($banks, 200);
     }
 }
