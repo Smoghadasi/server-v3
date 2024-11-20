@@ -34,6 +34,7 @@ use App\Models\Customer;
 use App\Models\Dictionary;
 use App\Models\Driver;
 use App\Models\Load;
+use App\Models\Setting;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -590,9 +591,10 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
     });
 
     Route::get('getTel', function () {
+        $setting = Setting::first();
         return response()->json([
             'result' => true,
-            'tel' => TELL
+            'tel' => $setting->tel
         ]);
     });
 
