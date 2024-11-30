@@ -467,7 +467,7 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
     });
 
 
-    Route::prefix('driver')->middleware(['auth:sanctum', 'revoke.old.tokens'])->group(function () {
+    Route::prefix('driver')->middleware(['auth:sanctum'])->group(function () {
 
         Route::get('radio', [RadioController::class, 'index']);
 
