@@ -17,10 +17,14 @@ class RevokeOldTokens
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $currentTokenId = PersonalAccessToken::where('tokenable_type', 'App\Models\Driver')->where('tokenable_id', Auth::id())->orderByDesc('created_at')->value('id');
+        $currentTokenId = PersonalAccessToken::where('tokenable_type', 'App\Models\Driver')
+            ->where('tokenable_id', Auth::id())
+            ->orderByDesc('created_at')
+            ->value('id');
 
         PersonalAccessToken::where('tokenable_type', 'App\Models\Driver')
             ->where('id', '!=',  $currentTokenId)
+            ->where('tokenable_id',  Auth::id())
             ->orderByDesc('created_at')
             ->delete();
 
