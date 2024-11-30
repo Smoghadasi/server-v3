@@ -70,9 +70,6 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
     // اعتبارسنجی کد فعال سازی برای باربری
     Route::post('verifyActivationCodeForBearing', [LoginController::class, 'verifyActivationCodeForBearing']);
 
-    // درخواست کد فعال سازی برای راننده
-    Route::post('requestActivationCodeForDriver', [LoginController::class, 'requestActivationCodeForDriver']);
-
     // اعتبار سنجی کد فعال سازی برای راننده
     Route::post('verifyActivationCodeForDriver', [LoginController::class, 'verifyActivationCodeForDriver']);
 
@@ -97,7 +94,6 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
     //  مسیرهای مروبوط به بار
     /******************************************************************************************/
 
-    // Route::post('customer/createNewLoad1', [LoadController::class, 'createNewLoad1']);
 
     // انتخاب راننده برای بار توسط باربری
     Route::post('bearing/selectDriverForLoad', [LoadController::class, 'selectDriverForLoad']);
@@ -471,7 +467,7 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
     });
 
 
-    Route::group(['prefix' => 'driver', 'middleware' => 'auth:sanctum'], function () {
+    Route::prefix('driver')->middleware(['auth:sanctum', 'revoke.old.tokens'])->group(function () {
 
         Route::get('radio', [RadioController::class, 'index']);
 

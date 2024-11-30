@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
         'operator' => \App\Http\Middleware\CheckOperatorRole::class,
         'admin' => \App\Http\Middleware\CheckAdminRole::class,
         'userStatus' => \App\Http\Middleware\CheckUserStatus::class,
+        'revoke.old.tokens' => \App\Http\Middleware\RevokeOldTokens::class,
     ];
 }
