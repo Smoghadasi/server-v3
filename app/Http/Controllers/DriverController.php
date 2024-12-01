@@ -478,8 +478,12 @@ class DriverController extends Controller
         //            $message .= ' کدهوشمند تکراری می باشد';
         //        }
 
-        if ($fleet_id == 0 || strlen($fleet_id) == 0) {
+        if ($fleet_id == 0 || strlen($fleet_id) == 0 || $request->fleet_id == "") {
             $message .= 'انتخاب ناوگان الزامی می باشد';
+            return [
+                'result' => UN_SUCCESS,
+                'message' => $message
+            ];
         }
 
         //        if ($countOfMobileNumber > 0 || $countOfNationalCode > 0 || $countOfSmartCode > 0) {
