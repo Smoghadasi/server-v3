@@ -1024,14 +1024,33 @@ class DriverController extends Controller
                     $loadRobari->delete();
                 }
             }
+            $driverCallCount = DriverCall::where('load_id', $load->id)->count();
 
             $fleets = json_decode($load->fleets, true);
             foreach ($fleets as $fleet) {
-                if (($fleet['fleet_id'] == 86 || $fleet['fleet_id'] == 82) && $load->driverCallCounter <= 0) {
+                if (($fleet['fleet_id'] == 86 || $fleet['fleet_id'] == 82) && $driverCallCount >= 5) {
                     $load->delete();
                 }
             }
         }
+        try {
+            $driverCallOwnerCount = DriverCall::where('load_id', $load->id)->whereHas('cargo', function ($q) {
+                $q->where('operator_id', 0);
+                $q->where('userType', ROLE_OWNER);
+            })->count();
+            if ($driverCallOwnerCount == 11) {
+                $owner = Owner::find($load->user_id);
+                if (!is_null($owner->FCM_token)) {
+                    $title = 'صاحب بار عزیز';
+                    $body = `بیش از 10 راننده برای بار از ($load->fromCity) به ($load->toCity)، با شما تماس گرفته اند.`;
+                    $this->sendNotification($owner->FCM_token, $title, $body, API_ACCESS_KEY_OWNER);
+                }
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+
+
 
         return ['result' => true];
     }

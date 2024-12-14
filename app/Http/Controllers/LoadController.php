@@ -3154,9 +3154,6 @@ class LoadController extends Controller
                 "notification" => [
                     "title" => $title,
                     "body" => $body
-                ],
-                "data" => [
-                    "route" => "/755840"
                 ]
             ],
         ];
