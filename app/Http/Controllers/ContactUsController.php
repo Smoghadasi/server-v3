@@ -83,7 +83,6 @@ class ContactUsController extends Controller
     {
         $messages = ContactUs::with('childrenRecursive')->where('role', 'driver')
             ->where('mobileNumber', $mobileNumber)
-            ->where('parent_id', '')
             ->get();
         if ($messages->isEmpty())
             return response()->json('Empty', 404);
