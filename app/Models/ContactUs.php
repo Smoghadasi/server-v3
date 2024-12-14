@@ -4,9 +4,12 @@ namespace App\Models;
 
 use App\Http\Controllers\FleetController;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\SelfParental;
 
 class ContactUs extends Model
 {
+    use SelfParental;
+
     protected $table = 'contact_uses';
 
     protected $appends = ['nameAndLastName', 'fleetName', 'messageDateAndTime', 'userId', 'shamsiUpdatedDate'];

@@ -81,8 +81,9 @@ class ContactUsController extends Controller
     // نمایش پیام ها رانندگان
     public function driverMessages($mobileNumber)
     {
-        $messages = ContactUs::where('role', 'driver')
+        $messages = ContactUs::with('childrenRecursive')->where('role', 'driver')
             ->where('mobileNumber', $mobileNumber)
+            ->where('parent_id', '')
             ->get();
         if ($messages->isEmpty())
             return response()->json('Empty', 404);
