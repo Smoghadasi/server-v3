@@ -558,7 +558,9 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
         // ذخیره توکن رانندگان
         Route::patch('saveMyFireBaseToken', [DriverController::class, 'saveMyFireBaseToken']);
 
-        Route::post('changeNotificationFunction', [NotificationController::class, 'changeNotificationFunction']);
+        Route::post('changeNotificationFunction', [NotificationController::class, 'changeNotificationFunction']); // ارسال نوتیفیکیشن
+
+        Route::post('changeSmsFunction', [NotificationController::class, 'changeSmsFunction']); // ارسال پیامک
     });
 
     // وب سرویس های عمومی

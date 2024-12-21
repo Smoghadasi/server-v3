@@ -107,4 +107,30 @@ class NotificationController extends Controller
             'message' => 'شما مجاز به انجام این عملیات نیستید'
         ];
     }
+
+    // تغییر عملکر نوتیفیکیشن
+    public function changeSmsFunction(Request $request)
+    {
+        $userType = $request->userType;
+        $sms = $request->sms;
+
+        if ($userType == 'driver') {
+            Driver::where('id', Auth::id())
+                ->update(['sms' => $sms]);
+            return [
+                'result' => SUCCESS
+            ];
+        } else if ($userType == 'owner') {
+            Owner::where('id', $request->owner_id)
+                ->update(['sms' => $sms]);
+            return [
+                'result' => SUCCESS
+            ];
+        }
+
+        return [
+            'result' => UN_SUCCESS,
+            'message' => 'شما مجاز به انجام این عملیات نیستید'
+        ];
+    }
 }
