@@ -81,8 +81,10 @@ class ContactUsController extends Controller
     // نمایش پیام ها رانندگان
     public function driverMessages($mobileNumber)
     {
-        $messages = ContactUs::with('childrenRecursive')->where('role', 'driver')
+        $messages = ContactUs::with('childrenRecursive')
+            ->where('role', 'driver')
             ->where('mobileNumber', $mobileNumber)
+            ->orderByDesc('created_at')
             ->get();
         if ($messages->isEmpty())
             return response()->json('Empty', 404);
@@ -115,7 +117,7 @@ class ContactUsController extends Controller
         $contact = new ContactUs();
         $contact->status = true;
         $contact->parent_id = $contactUs->id;
-        $contact->role = 'operator';
+        $contact->role = 'driver';
         $contact->result = strlen($request->result) ? $request->result : "نتیجه ای ثبت نشده!";
         $contact->save();
 
