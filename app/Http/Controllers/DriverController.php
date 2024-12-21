@@ -1437,6 +1437,7 @@ class DriverController extends Controller
                 'address' => $driver->address,
                 'ratingDriver' => $driver->ratingDriver,
                 'notification' => $driver->notification,
+                'sms' => $driver->sms,
             ]
         ]);
     }
