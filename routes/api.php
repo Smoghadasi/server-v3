@@ -477,6 +477,8 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
         // امتیاز
         Route::post('score', [LoadController::class, 'score']);
 
+        Route::post('changeMessageStatus/{contactUs}', [ContactUsController::class, 'changeMessageStatus']);
+
         Route::get('historySearchDriver', [HistorySearchDriverController::class, 'index']);
 
         Route::post('historySearchDriver', [HistorySearchDriverController::class, 'store']);

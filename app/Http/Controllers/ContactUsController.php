@@ -112,11 +112,14 @@ class ContactUsController extends Controller
     // تغییر وضعیت به خوانده شده
     public function changeMessageStatus(ContactUs $contactUs, Request $request)
     {
-        $contactUs->status = true;
-        $contactUs->result = strlen($request->result) ? $request->result : "نتیجه ای ثبت نشده!";
-        $contactUs->save();
+        $contact = new ContactUs();
+        $contact->status = true;
+        $contact->parent_id = $contactUs->id;
+        $contact->role = 'operator';
+        $contact->result = strlen($request->result) ? $request->result : "نتیجه ای ثبت نشده!";
+        $contact->save();
 
-        return back()->with('success', 'وضعیت پیام مورد نظر به خوانده شده تغییر و نتیجه پیگیری ثبت شد.');
+        return response()->json($contact, 200);
     }
 
 
