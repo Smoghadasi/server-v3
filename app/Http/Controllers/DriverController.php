@@ -28,6 +28,7 @@ use App\Models\State;
 use App\Models\Transaction;
 use Exception;
 use http\Env\Response;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -864,12 +865,16 @@ class DriverController extends Controller
     public function checkDriverStatusForCalling($phoneNumber = '0', $load_id = 0, $latitude = 0, $longitude = 0)
     {
         try {
-            $load = Load::findOrFail($load_id);
             $driver = Driver::findOrFail(Auth::id());
 
-            if ($load === null) {
+            try {
+                Load::findOrFail($load_id);
+            } catch (ModelNotFoundException $e) {
                 return ['result' => 2];
             }
+
+            // Your code here if the load is found
+
 
             try {
                 $fleetLoad = FleetLoad::where('fleet_id', $driver->fleet_id)->where('load_id', $load_id)->first();
@@ -882,38 +887,6 @@ class DriverController extends Controller
             } catch (\Exception $e) {
                 Log::warning($e->getMessage());
             }
-
-            // if (
-            //     $driver->fleet_id == 48 ||
-            //     $driver->fleet_id == 50 ||
-            //     $driver->fleet_id == 51 ||
-            //     $driver->fleet_id == 56 ||
-            //     $driver->fleet_id == 57 ||
-            //     $driver->fleet_id == 58 ||
-            //     $driver->fleet_id == 63 ||
-            //     $driver->fleet_id == 66 ||
-            //     $driver->fleet_id == 78 ||
-            //     $driver->fleet_id == 79
-            // ) {
-            //     if ($checkDriverFleet === null) {
-            //         $driverFleet = new DriverFleet();
-            //         $driverFleet->fleet_id = $driver->fleet_id;
-            //         $driverFleet->driver_id = $driver->id;
-            //         $driverFleet->freeCall = 300;
-            //         $driverFleet->save();
-            //         return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
-            //     } else {
-            //         if ($checkDriverFleet->freeCall > 0) {
-            //             $checkDriverFleet->freeCall -= 1;
-            //             $checkDriverFleet->save();
-            //             return $this->checkCreditDriver($driver, $load_id, $phoneNumber, false);
-            //         } else {
-            //             return [
-            //                 'result' => false
-            //             ];
-            //         }
-            //     }
-            // }
 
             if ($driver->activeDate > date("Y-m-d H:i:s", time()) || $driver->freeCalls > 0) {
                 return $this->checkCreditDriver($driver, $load_id, $phoneNumber, true);
