@@ -1017,6 +1017,7 @@ class LoadController extends Controller
             $driverFCM_tokens = Driver::whereNotNull('FCM_token')
                 ->where('province_id', $cityFrom->parent_id)
                 ->where('fleet_id', $fleet->fleet_id)
+                ->where('notification', 'enable')
                 ->where('version', '>', 58)
                 ->pluck('FCM_token');
             $title = 'ایران ترابر رانندگان';
