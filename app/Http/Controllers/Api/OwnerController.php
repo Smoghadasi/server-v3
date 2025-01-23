@@ -8,6 +8,7 @@ use App\Models\Owner;
 use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class OwnerController extends Controller
@@ -42,8 +43,9 @@ class OwnerController extends Controller
         return response()->json($response, 201);
     }
 
-    public function authOwner(Request $request, Owner $owner)
+    public function authOwner(Request $request)
     {
+        $owner = Owner::find(Auth::id());
         try {
             $validator = Validator::make($request->all(), [
                 'address' => 'nullable',
@@ -82,6 +84,7 @@ class OwnerController extends Controller
                 }
                 $owner->isAuth = 2;
                 $owner->isOwner = 1;
+                $owner->auth_at = now();
 
                 $owner->save();
                 $response = [
@@ -95,8 +98,9 @@ class OwnerController extends Controller
     }
 
 
-    public function authBearing(Request $request, Owner $owner)
+    public function authBearing(Request $request)
     {
+        $owner = Owner::find(Auth::id());
         try {
             $validator = Validator::make($request->all(), [
                 'companyName' => 'nullable',
@@ -167,11 +171,24 @@ class OwnerController extends Controller
     }
 
     // درخواست اطلاعات صاحب بار
-    public function profile(string $id)
+    public function profile()
     {
         try {
             $owner = Owner::with('operatorMessages')
-                ->where('id', $id)
+                ->where('id', Auth::id())
+                // ->select([
+                //     'id',
+                //     'name',
+                //     'lastName',
+                //     'profileImage',
+                //     'mobileNumber',
+                //     'nationalCardImage',
+                //     'nationalCode',
+                //     'nationalFaceImage',
+                //     'profileImage',
+                //     'status',
+                //     'isAuth',
+                // ])
                 ->first();
             return [
                 'result' => SUCCESS,

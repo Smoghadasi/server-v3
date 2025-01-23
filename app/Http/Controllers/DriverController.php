@@ -873,9 +873,6 @@ class DriverController extends Controller
                 return ['result' => 2];
             }
 
-            // Your code here if the load is found
-
-
             try {
                 $fleetLoad = FleetLoad::where('fleet_id', $driver->fleet_id)->where('load_id', $load_id)->first();
                 if ($fleetLoad) {

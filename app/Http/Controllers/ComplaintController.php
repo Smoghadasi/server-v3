@@ -236,14 +236,13 @@ class ComplaintController extends Controller
     }
 
     // انتقاد یا شکایت صاحبان بار
-    public function storeComplaintOwner(Request $request, Owner $owner)
+    public function storeComplaintOwner(Request $request)
     {
         try {
-
             $complaintOwner = new ComplaintOwner();
-            $complaintOwner->owner_id = $owner->id;
+            $complaintOwner->owner_id = Auth::id();
             $complaintOwner->title = $request->title;
-            $complaintOwner->phoneNumber = $request->phoneNumber;
+            $complaintOwner->phoneNumber = Auth::user()->mobileNumber;
             $complaintOwner->message = $request->message;
             $complaintOwner->trackingCode = rand(10000, 99999);
             $complaintOwner->save();
@@ -266,11 +265,11 @@ class ComplaintController extends Controller
     }
 
     // پیگیری انتقاد یا شکایت صاحبان بار
-    public function getComplaintOwnerResult(Request $request, Owner $owner)
+    public function getComplaintOwnerResult(Request $request)
     {
         try {
             $complaintOwner = ComplaintOwner::where([
-                ['owner_id', $owner->id],
+                ['owner_id', Auth::id()],
                 ['trackingCode', $request->trackingCode]
             ])->first();
 

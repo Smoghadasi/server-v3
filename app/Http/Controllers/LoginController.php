@@ -232,31 +232,18 @@ class LoginController extends Controller
         ])->count();
         // return $activationCode;
         if ($activationCode > 0) {
-            if ($request->isOwner == 0) {
-                $owner = Owner::where('mobileNumber', '=', $mobileNumber)->first();
-                if ($owner) {
-                    return [
-                        'result' => IS_MEMBER,
-                        'id' => $owner->id
-                    ];
-                }
+            $owner = Owner::where('mobileNumber', '=', $mobileNumber)->first();
+            if ($owner) {
+                $token = $owner->createToken('owner')->plainTextToken;
                 return [
-                    'result' => NOT_MEMBER
-                ];
-            } else {
-                $bearing = Bearing::where('mobileNumber', '=', $mobileNumber)->first();
-                if ($bearing) {
-                    // قبلا این باربری ذخیره شده است
-                    return [
-                        'result' => IS_MEMBER,
-                        'id' => $bearing->id
-                    ];
-                }
-                // قبلا این باربری ذخیره نشده است
-                return [
-                    'result' => NOT_MEMBER
+                    'result' => IS_MEMBER,
+                    'id' => $owner->id,
+                    'token' => $token,
                 ];
             }
+            return [
+                'result' => NOT_MEMBER
+            ];
         } else {
             return [
                 'result' => UN_SUCCESS,

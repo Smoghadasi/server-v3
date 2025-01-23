@@ -683,7 +683,7 @@ class LoadController extends Controller
             }
         } catch (\Exception $exception) {
         }
-        foreach ($request->destinationCities as $key => $destination_city) {
+        // foreach ($request->destinationCities as $key => $destination_city) {
             try {
                 $message[1] = '';
                 $loadPic = null;
@@ -725,24 +725,26 @@ class LoadController extends Controller
                 $load->loadPic = $loadPic;
                 $load->user_id = $request->user_id;
                 $load->userType = $request->userType;
-                $load->loadMode = $request->loadMode;
-                $load->loadingHour = $request->loadingHour;
-                $load->loadingMinute = $request->loadingMinute;
-                $load->numOfTrucks = $request->numOfTrucks;
+                $load->loadMode = 'outerCity';
+                $load->loadingHour = 0;
+                $load->loadingMinute = 0;
+                $load->numOfTrucks = 1;
                 $load->date = gregorianDateToPersian(date('Y/m/d', time()), '/');
                 $load->dateTime = now()->format('H:i:s');
 
-                $load->originLatitude = $request->originLatitude;
-                $load->originLongitude = $request->originLongitude;
+                $cityOrigin = ProvinceCity::find($request->origin_city_id);
+                $load->originLatitude = $cityOrigin->latitude;
+                $load->originLongitude = $cityOrigin->longitude;
+                $cityDestination = ProvinceCity::find($request->destination_city_id);
 
-                $load->destinationLatitude = $request->destinationLatitudes[$key];
-                $load->destinationLongitude = $request->destinationLongitudes[$key];
+                $load->destinationLatitude = $cityDestination->latitude;
+                $load->destinationLongitude = $cityDestination->longitude;
 
                 $load->origin_city_id = $request->origin_city_id;
-                $load->destination_city_id = $destination_city;
+                $load->destination_city_id = $request->destination_city_id;
 
                 $load->fromCity = $this->getCityName($request->origin_city_id);
-                $load->toCity = $this->getCityName($destination_city);
+                $load->toCity = $this->getCityName($request->destination_city_id);
                 try {
                     $city = ProvinceCity::find($request->origin_city_id);
                     if (isset($city->id)) {
@@ -753,7 +755,7 @@ class LoadController extends Controller
                 }
 
 
-                $load->loadingDate = $request->loadingDate;
+                $load->loadingDate = gregorianDateToPersian(date('Y/m/d', time()), '/');
                 $load->time = time();
 
 
@@ -983,7 +985,7 @@ class LoadController extends Controller
                 Log::emergency($e->getMessage());
                 Log::emergency("==============================================================");
             }
-        }
+        // }
         if (isset($load->id)) {
             return [
                 'result' => SUCCESS,
@@ -1208,12 +1210,12 @@ class LoadController extends Controller
 
 
     // درخواست لیست بارهای مشتری
-    public function requestCustomerLoadsLists($id)
+    public function requestCustomerLoadsLists()
     {
         $loads = Load::join('load_statuses', 'loads.status', '=', 'load_statuses.status')
             ->join('province_cities as originCity', 'loads.origin_city_id', 'originCity.id')
             ->join('province_cities as destinationCity', 'loads.destination_city_id', 'destinationCity.id')
-            ->where('user_id', $id)
+            ->where('user_id', Auth::id())
             ->where('userType', 'owner')
             ->select(
                 'loads.id',
@@ -1232,6 +1234,7 @@ class LoadController extends Controller
                 'loads.created_at',
                 'loads.date',
                 'loads.dateTime',
+                'loads.deleted_at',
             )
             ->orderByDesc('created_at')
             ->paginate(10);
@@ -1244,12 +1247,12 @@ class LoadController extends Controller
     }
 
     // درخواست لیست بارهای بایگانی صاحبان بار
-    public function requestCustomerLoadsTrashed($id)
+    public function requestCustomerLoadsTrashed()
     {
         $loads = Load::join('load_statuses', 'loads.status', '=', 'load_statuses.status')
             ->join('province_cities as originCity', 'loads.origin_city_id', 'originCity.id')
             ->join('province_cities as destinationCity', 'loads.destination_city_id', 'destinationCity.id')
-            ->where('user_id', $id)
+            ->where('user_id', Auth::id())
             ->where('userType', 'owner')
             ->select(
                 'loads.id',
@@ -1266,6 +1269,7 @@ class LoadController extends Controller
                 'loads.loadingMinute',
                 'loads.loadingDate',
                 'loads.created_at',
+                'loads.deleted_at',
                 'loads.date',
                 'loads.dateTime',
             )
@@ -4681,11 +4685,11 @@ class LoadController extends Controller
     }
 
     // حذف بار
-    public function removeOwnerLoad(string $load, string $owner)
+    public function removeOwnerLoad(string $load)
     {
         Load::where('id', $load)
             ->where('userType', 'owner')
-            ->where('user_id', $owner)
+            ->where('user_id', Auth::id())
             ->delete();
         return response()->json(['result' => true], 200);
     }

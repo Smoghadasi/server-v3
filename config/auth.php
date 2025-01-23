@@ -64,10 +64,13 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
         'drivers' => [
             'driver' => 'eloquent',
             'model' => \App\Models\Driver::class,
+        ],
+        'owners' => [
+            'owner' => 'eloquent',
+            'model' => \App\Models\Owner::class,
         ],
     ],
 
@@ -99,6 +102,11 @@ return [
         ],
         'drivers' => [
             'provider' => 'drivers',
+            'table' => 'password_resets',
+            'expire' => 1800,
+        ],
+        'owners' => [
+            'provider' => 'owners',
             'table' => 'password_resets',
             'expire' => 1800,
         ],
